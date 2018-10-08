@@ -2,3 +2,4 @@
 .bash_logout
 .cache/
 .ssh/known_hosts
+.viminfo
