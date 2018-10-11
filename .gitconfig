@@ -1,3 +1,5 @@
 [user]
 	email = kawasaki@dev.kawa1128.jp
 	name = KAWASAKI Yasukazu
+[push]
+	default = simple
