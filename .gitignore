@@ -6,7 +6,6 @@
 .selected_editor
 *.log
 *.log.*
-cache/*
 *.lock
 *.sock
 *.pid
