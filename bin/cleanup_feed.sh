@@ -9,3 +9,4 @@ cleanup /home/weather/cache/JMAWIS/ 2
 cleanup /home/weather/cache/GSM/ 7
 cleanup /home/weather/cache/MSM/ 7
 cleanup /home/weather/cache/JMAXML/ 2
+cleanup /home/weather/cache/GFS/ 7
