@@ -3,3 +3,18 @@
 .cache/
 .ssh/known_hosts
 .viminfo
+.selected_editor
+*.log
+*.log.*
+cache/*
+*.lock
+*.sock
+*.pid
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+
+
