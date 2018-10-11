@@ -16,4 +16,9 @@ __pycache__/
 *$py.class
 .env
 
+## Data Cache
+cache/GSM/*
+cache/MSM/*
+cache/JMAWIS/*
+cache/JMAXML/*
 
