@@ -37,3 +37,4 @@ MAILTO=weather@hiyorimi.jp
 
 # GFS
 0 1,7,13,19 * * * /usr/bin/env python3 /home/weather/bin/downloader_GFS_0p5.py > /dev/null 2>&1
+30 8 * * * /usr/bin/env python3 /home/weather/bin/downloader_GFS_SST.py > /dev/null 2>&1

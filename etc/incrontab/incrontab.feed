@@ -3,3 +3,4 @@
 /home/weather/cache/JMAWIS/ IN_MOVED_TO /usr/bin/env python3 /home/weather/bin/process_feed.py $@$#
 /home/weather/cache/JMAXML/ IN_MOVED_TO /usr/bin/env python3 /home/weather/bin/process_feed.py $@$#
 /home/weather/cache/GFS/ IN_MOVED_TO /usr/bin/env python3 /home/weather/bin/process_feed.py $@$#
+/home/weather/cache/SST/ IN_MOVED_TO /usr/bin/env python3 /home/weather/bin/process_feed.py $@$#
