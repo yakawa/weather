@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+
+{% block main %}
+<div class="contents">
+	<div class="inner">
+		<section>
+			
+			<h2>サービス<span>Service</span></h2>
+			
+			<div class="list">
+				<a href="#API">
+					<img src="/static/img/api.jpg" alt="" class="img">
+					<div class="text">
+						<h4>API（予定）</h4>
+						<p>気象関連情報をAPI形式で提供</p>
+					</div>
+				</a>
+			</div>
+			
+			<div class="list">
+				<a href="#fcst">
+					<img src="/static/img/fcst.jpg" alt="" class="img">
+					<div class="text">
+						<h4>予報支援</h4>
+						<p>週間天気予報を軸とした、気象情報提供。</p>
+					</div>
+				</a>
+			</div>
+			
+			<!--
+					<div class="list">
+						<a href="service2.html">
+							<img src="images/noimg.png" alt="" class="img">
+							<div class="text">
+								<h4>Sample Title</h4>
+								<p>ボックス内のテキストは短めにして下さい。</p>
+							</div>
+						</a>
+					</div>
+					-->
+			<h2>サービス詳細<span>Service Detail</span></h2>
+
+			<a id="API"></a>
+			<div class="list c1">
+				<img src="/static/img/api.jpg" alt="" class="img">
+				<div class="text">
+					<h4>API</h4>
+					
+					<p>気象庁XMLのデータをJSON形式にてAPI提供いたします。また、ご要望に応じて、他の形式などでも提供可能です。（予定）</p>
+				</div>
+			</div>
+
+			<a id="fcst"></a>
+			<div class="list c1">
+				<img src="/static/img/fcst.jpg" alt="" class="img">
+				<div class="text">
+					<h4>予報支援</h4>
+					
+					<p>週間予報を中心として、最適な気象情報を提供します。（予定）</p>
+				</div>
+			</div>
+			
+			<!--
+			<div class="list c1">
+				<a href="service2.html">
+					<img src="images/sample1.jpg" alt="" class="img">
+					<div class="text">
+						<h4>Sample Title</h4>
+						<p></p>
+					</div>
+				</a>
+			</div>
+			-->
+		</section>
+	</div>
+</div>
+{% endblock %}
