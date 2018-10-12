@@ -21,20 +21,20 @@
 #
 # m h  dom mon dow   command
 MAILTO=weather@hiyorimi.jp
-0 0 * * * /bin/bash /home/weather/bin/cleanup_feed.sh > /dev/null 2>&1
+0 0 * * * /bin/bash /home/weather/tools/cleanup/cleanup_feed.sh > /dev/null 2>&1
 
 # WIS
-* * * * * /usr/bin/env python3 /home/weather/bin/downloader_JMAWIS_txt_surface.py > /dev/null 2>&1
-* * * * * /usr/bin/env python3 /home/weather/bin/downloader_JMAWIS_txt_forecast.py > /dev/null 2>&1
-* * * * * /usr/bin/env python3 /home/weather/bin/downloader_JMAWIS_txt_upper.py > /dev/null 2>&1
-* * * * * /usr/bin/env python3 /home/weather/bin/downloader_JMAWIS_txt_warnings.py > /dev/null 2>&1
-* * * * * /usr/bin/env python3 /home/weather/bin/downloader_JMAWIS_txt_sat.py > /dev/null 2>&1
+* * * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_JMAWIS_txt_surface.py > /dev/null 2>&1
+* * * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_JMAWIS_txt_forecast.py > /dev/null 2>&1
+* * * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_JMAWIS_txt_upper.py > /dev/null 2>&1
+* * * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_JMAWIS_txt_warnings.py > /dev/null 2>&1
+* * * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_JMAWIS_txt_sat.py > /dev/null 2>&1
 
 # GPV
-*/10 * * * * /usr/bin/env python3 /home/weather/bin/downloader_WNI_GSM_short.py > /dev/null 2>&1
-*/10 * * * * /usr/bin/env python3 /home/weather/bin/downloader_WNI_GSM_ext.py > /dev/null 2>&1
-*/10 * * * * /usr/bin/env python3 /home/weather/bin/downloader_WNI_MSM.py > /dev/null 2>&1
+*/10 * * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_WNI_GSM_short.py > /dev/null 2>&1
+*/10 * * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_WNI_GSM_ext.py > /dev/null 2>&1
+*/10 * * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_WNI_MSM.py > /dev/null 2>&1
 
 # GFS
-0 1,7,13,19 * * * /usr/bin/env python3 /home/weather/bin/downloader_GFS_0p5.py > /dev/null 2>&1
-30 8 * * * /usr/bin/env python3 /home/weather/bin/downloader_GFS_SST.py > /dev/null 2>&1
+0 1,7,13,19 * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_GFS_0p5.py > /dev/null 2>&1
+30 8 * * * /usr/bin/env python3 /home/weather/tools/downloader/downloader_GFS_SST.py > /dev/null 2>&1
