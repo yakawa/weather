@@ -1,0 +1,12 @@
+[Unit]
+Description=digdag
+
+[Service]
+Restart=always
+ExecStart=/bin/sh -c "/usr/local/bin/digdag server --bind 0.0.0.0 --config /etc/digdag/digdag.conf --task-log /var/log/digdag/ --access-log /var/log/digdag"
+User=weather
+Group=weather
+WorkingDirectory=/home/weather/workflow/
+
+[Install]
+WantedBy=multi-user.target
