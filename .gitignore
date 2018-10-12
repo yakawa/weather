@@ -9,6 +9,7 @@
 *.lock
 *.sock
 *.pid
+.lesshst 
 
 # Python
 __pycache__/

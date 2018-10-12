@@ -115,3 +115,30 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+export WRF_LIB_DIR=/home/WRF/lib
+export CC=gcc
+export CXX=g++
+export FC=gfortran
+export FCFLAGS=-m64
+export F77=gfortran
+export FFLAGS=-m64
+
+export NETCDF=$WRF_LIB_DIR/netcdf
+
+export PATH=$WRF_LIB_DIR/netcdf/bin:$PATH
+
+export LDFLAGS=-L$WRF_LIB_DIR/grib2/lib
+export CPPFLAGS=-I$WRF_LIB_DIR/grib2/include
+
+export JASPERLIB=$WRF_LIB_DIR/grib2/lib
+export JASPERINC=$WRF_LIB_DIR/grib2/include
+export NCARG_ROOT=/home/WRF/ncar
+
+export WRF_EM_CORE=1
+export WRF_NMM_CORE=0
+export WRF_DA_CORE=0
+export OMP_NUM_THREADS=4
+export MP_STACK_SIZE=64000000
+
+ulimit -s unlimited
