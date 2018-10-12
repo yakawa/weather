@@ -1,0 +1,1 @@
+/home/weather/cache/GFS/ IN_CLOSE_WRITE /usr/bin/env python3 /home/weather/tools/processor/process_GFS.py $@$#
