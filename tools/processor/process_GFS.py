@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+import argparse
 import pathlib
 import datetime
 import shutil
@@ -53,7 +55,7 @@ def main(args):
         DST.mkdir(parent=True)
 
     if fp.name in fq:
-        shutil.copy(fp, DST / fp.name)
+        shutil.copy(str(fp), str(DST / fp.name))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__DESC__)
