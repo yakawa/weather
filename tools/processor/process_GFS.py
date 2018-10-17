@@ -9,9 +9,6 @@ import shutil
 __DESC__ = 'process GFS'
 
 DST = pathlib.Path('/home/DATA/outgoing/wrf/')
-KEY = '/home/weather/.ssh/id_rsa'
-USER = 'weather'
-RSYNC = '/usr/bin/scp'
 
 FILE_BASE = 'gfs.{yr:04d}{mo:02d}{dy:02d}_{hr:02d}_{ft:03d}'
 
