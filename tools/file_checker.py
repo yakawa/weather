@@ -14,8 +14,12 @@ __DESC__ = 'File existing checker'
 GFS_BASE_DIR = pathlib.Path('/home/DATA/outgoing/wrf/')
 GFS_BASE_FILE = 'gfs.{year:04d}{month:02d}{day:02d}_{hour:02d}_{ft:03d}'
 
-def get_gfs_init():
-    now = datetime.datetime.utcnow()
+def get_gfs_init(cur):
+    if cur is None:
+        now = datetime.datetime.utcnow()
+    else:
+        now = datetime.datetime.strptime(cur, '%Y%m%d%H%M')
+
     now = now.replace(second=0, microsecond=0)
     target = now - datetime.timedelta(hours=3, minutes=30)
     if 0 <= target.hour < 6:
@@ -54,7 +58,7 @@ def run_with_timeout(timeout_sec,func, *args, **kargs):
 def main(args):
     if args.init is None:
         if args.TYPE.startswith('GFS'):
-            init = get_gfs_init()
+            init = get_gfs_init(args.current_time)
         else:
             init = None
     else:
@@ -83,6 +87,8 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--init', metavar='INIT', type=str, help='Initial Time')
     parser.add_argument('-n', '--non-blocking', action='store_true')
     parser.add_argument('-t', '--timeout', type=int, help='Timeout [sec]', default=6*3600)
+    parser.add_argument('-c', '--current-time', metavar='TIME', type=str, help='Run Time')
+    parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('TYPE', type=str, choices=['GFS_l', 'GFS_s'])
     args = parser.parse_args()
 
