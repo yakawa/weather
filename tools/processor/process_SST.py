@@ -22,7 +22,7 @@ def main(args):
     init = datetime.datetime.strptime(fp.name, 'sst.%Y%m%d')
     cur = get_latest_sst()
     if cur is not None:
-        if init <= dt:
+        if init <= cur:
             return
         (DST / cur.strftime('sst.%Y%m%d')).unlink()
     shutil.copy(str(fp), str(DST / fp.name))
