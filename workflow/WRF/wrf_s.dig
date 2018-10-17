@@ -8,16 +8,16 @@ sla:
   fail: true
   +notice:
     +clean_up:
-      sh>: /home/weather/tools/pre_WRF/remove_gfs.py GFS_s -c ${moment(session_time).format("YYYYMMDDHHmm")}
+      sh>: /home/weather/tools/WRF/remove_gfs.py GFS_s -c ${moment(session_time).format("YYYYMMDDHHmm")}
     +kill_task:
       sh>: /home/weather/tools/digdag/kill_attempt.sh ${session_id}
 
 +check_files:
-  sh>: /home/weather/tools/pre_WRF/file_checker.py GFS_s -c ${moment(session_time).format("YYYYMMDDHHmm")}
+  sh>: /home/weather/tools/WRF/file_checker.py GFS_s -c ${moment(session_time).format("YYYYMMDDHHmm")}
 
 +sync_gfs:
-  sh>: /home/weather/tools/pre_WRF/sync_gfs.sh
+  sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf weather@wrf001.hiyorimi.jp:/home/DATA/incoming/wrf
 
 +remove_gfs:
-  sh>: /home/weather/tools/pre_WRF/remove_gfs.py GFS_s -c ${moment(session_time).format("YYYYMMDDHHmm")}
+  sh>: /home/weather/tools/WRF/remove_gfs.py GFS_s -c ${moment(session_time).format("YYYYMMDDHHmm")}
 
