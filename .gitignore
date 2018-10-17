@@ -24,3 +24,7 @@ cache/JMAWIS/*
 cache/JMAXML/*
 cache/GFS/*
 cache/SST/*
+
+## Digdag
+/.digdag-wrapper
+.digdag
