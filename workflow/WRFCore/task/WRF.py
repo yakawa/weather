@@ -1,0 +1,50 @@
+# -*- coding utf-8 -*-
+
+import digdag
+import pathlib
+import datetime
+import sys
+
+class WRF():
+    def __init__(self):
+        self.WRF_dir = pathlib.Path('/home/WRF/WRF/run')
+        self.WPS_dir = pathlib.Path('/home/WRF/WPS')
+        self.DATA_dir = pathlib.Path('/home/DATA/incoming/wrf')
+
+    def cleanup(self):
+        digdag.env.add_subtask(WRF._delete_wps_dir)
+        digdag.env.add_subtask(WRF._delete_wrf_dir)
+
+    def _delete_wps_dir(self):
+        file_prefix = ('FILE:', 'GRIBFILE', 'met_em.d', 'Vtable')
+        for f in WPS_dir.iterdir():
+
+            if f.name.startswith(file_prefix):
+                f.unlink()
+                continue
+
+    def _delete_wrf_dir(self):
+        file_prefix = ('met_em.d', 'rsl.', 'wrfinput', 'wrfbdy', 'wrfrst_', 'wrfout_')
+        for f in self.WRF_dir.iterdir():
+
+            if f.name.startswith(file_prefix):
+                f.unlink()
+                continue
+
+    def get_latest_date():
+        sst_tm = datetime.datetime(year=1, month=1, day=1)
+        gfs_tm = datetime.datetime(year=1, month=1, day=1)
+
+        for f in sorted(DATA_DIR.iterdir()):
+            if f.name.startswith('sst.'):
+                tm = datetime.datetime.strptime(f.name, 'sst.%Y%m%d')
+                if sst_tm <= tm:
+                    sst_tm = tm
+            if f.name.startswith('gfs.'):
+                tm = datetime.datetime.strptime(f.name[0:15], 'gfs.%Y%m%d_%H')
+                if gfs_tm <= tm:
+                    gfs_tm = tm
+        digdag.env.store({
+            'sst_tm': sst_tm.strftime('%Y-%m-%d_%H:%M:%S'),
+            'gfs_tm': gfs_tm.strftime('%Y-%m-%d_%H:%M:%S'),
+        })

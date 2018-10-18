@@ -11,10 +11,10 @@ _export:
   python: /usr/bin/python3
 
 +cleanup:
-  sh>: /home/weather/tools/WRFCore/cleanup.py
+  py>: task.WRF.cleanup
 
 +get_date:
-  py>: py.get_latest_date
+  py>: task.WRF.get_latest_date
 
 +preprocess_sst:
   echo>: /home/weather/tools/WRFCore/pre_sst.py ${WRF.lat} ${WRF.lon} ${WRF.dx} ${WRF.dy} ${WRF.nx} ${WRF.ny} ${sst_tm}
