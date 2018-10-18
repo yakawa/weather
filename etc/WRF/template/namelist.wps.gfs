@@ -1,11 +1,11 @@
 &share
   wrf_core = 'ARW',
   max_dom = 1,
-  start_date = '{{ tm  }}',
-  end_date   = '{{ tm }}',
-  interval_seconds = 10800
+  start_date = '{{ start_tm  }}',
+  end_date   = '{{ end_tm }}',
+  interval_seconds = {{ interval }}
   io_form_geogrid = 2,
- /
+/
 
 &geogrid
   parent_id         =   1,
@@ -22,17 +22,17 @@
   ref_lon   =  {{ lon }},
   truelat1  =  {{ lat }},
   truelat2  =  0,
-  stand_lon = {{ lon }},
+  stand_lon =  {{ lon }},
   geog_data_path = '/home/WRF/lib/WPS_GEOG/'
 /
 
 &ungrib
   out_format = 'WPS',
-  prefix = 'SST',
+  prefix = 'FILE',
 /
 
 &metgrid
   fg_name = 'FILE'
   io_form_metgrid = 2,
-  constants_name = '/home/WRF/WPS/SST:{{ tm }}'
+  constants_name = './SST:{{ sst_tm }}'
 /

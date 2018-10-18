@@ -2,6 +2,7 @@ timezone: UTC
 
 _export:
   WRF:
+    map: mercator
     lat: 34.894
     lon: 133.213
     dx: 15000
@@ -22,5 +23,8 @@ _export:
 +preprocess_sst:
   py>: task.WRF.WRF.preprocess_sst
 
++preprocess_gfs_fillin:
+  py>: task.WRF.WRF.fillin_gfs_template
+
 +preprocess_gfs:
-  echo>: /home/weather/tools/WRFCore/pre_gfs.py ${WRF.lat} ${WRF.lon} ${WRF.dx} ${WRF.dy} ${WRF.nx} ${WRF.ny} ${gfs_tm} ${sst_tm}
+  py>: task.WRF.WRF.preprocess_gfs

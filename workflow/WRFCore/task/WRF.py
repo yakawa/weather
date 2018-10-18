@@ -62,6 +62,7 @@ class WRF():
         env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(self.TEMPLATE_dir), encoding='utf8'))
         tmpl = env.get_template('namelist.wps.sst')
 
+        proj = digdag.env.params['WRF']['map']
         lat = digdag.env.params['WRF']['lat']
         lon = digdag.env.params['WRF']['lon']
         dx = digdag.env.params['WRF']['dx']
@@ -71,13 +72,53 @@ class WRF():
         tm = digdag.env.params['sst_tm']
 
         with (self.WPS_dir / 'namelist.wps').open('w') as f:
-            f.write(tmpl.render(tm=tm, lat=lat, lon=lon, dx=dx, dy=dy, nx=nx, ny=ny))
+            f.write(tmpl.render(tm=tm, lat=lat, lon=lon, dx=dx, dy=dy, nx=nx, ny=ny, map=proj))
+
+    def fillin_gfs_template(self):
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(self.TEMPLATE_dir), encoding='utf8'))
+        tmpl = env.get_template('namelist.wps.gfs')
+
+        proj = digdag.env.params['WRF']['map']
+        lat = digdag.env.params['WRF']['lat']
+        lon = digdag.env.params['WRF']['lon']
+        dx = digdag.env.params['WRF']['dx']
+        dy = digdag.env.params['WRF']['dy']
+        nx = digdag.env.params['WRF']['nx']
+        ny = digdag.env.params['WRF']['ny']
+        sst_tm = digdag.env.params['sst_tm']
+        start_tm = digdag.env.params['gfs_tm']
+        tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
+        if tm.hour == 12:
+            end_tm = (tm + datetime.timedelta(hours=16*24)).strftime('%Y-%m-%d_%H:%M:%S')
+            interval = 6
+            run_hour = 16 * 24
+        else:
+            end_tm = (tm + datetime.timedelta(hours=5*24)).strftime('%Y-%m-%d_%H:%M:%S')
+            interval = 12
+            run_hour = 5 * 24
+
+        with (self.WPS_dir / 'namelist.wps').open('w') as f:
+            f.write(tmpl.render(start_tm=start_tm, end_tm=end_tm, sst_tm=sst_tm, lat=lat, lon=lon, dx=dx, dy=dy, nx=nx, ny=ny, map=proj, run_hour=run_hour, interval=interval))
+
 
     def preprocess_sst(self):
         cwd = os.getcwd()
         os.chdir(self.WPS_dir)
         tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S')
         subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_dir / tm.strftime('sst.%Y%m%d'))], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+        if self.VTABLE.exists() is True:
+            self.VTABLE.unlink()
         self.VTABLE.symlink_to(self.WPS_dir / 'ungrib' / 'Variable_Tables' / 'Vtable.SST')
+        subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+        os.chdir(cwd)
+
+    def preprocess_gfs(self):
+        cwd = os.getcwd()
+        os.chdir(self.WPS_dir)
+        tm = datetime.datetime.strptime(digdag.env.params['gfs_tm'], '%Y-%m-%d_%H:%M:%S')
+        subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_dir / tm.strftime('gfs.%Y%m%d_%H'))], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+        if self.VTABLE.exists() is True:
+            self.VTABLE.unlink()
+        self.VTABLE.symlink_to(self.WPS_dir / 'ungrib' / 'Variable_Tables' / 'Vtable.GFS')
         subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
         os.chdir(cwd)
