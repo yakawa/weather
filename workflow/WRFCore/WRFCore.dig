@@ -1,7 +1,14 @@
 timezone: UTC
 
 _export:
-  python: /usr/bin/env python3
+  WRF:
+    lat: 34.894
+    lon: 133.213
+    dx: 15000
+    dy: 15000
+    nx: 200
+    ny: 200
+  python: /usr/bin/python3
 
 +cleanup:
   sh>: /home/weather/tools/WRFCore/cleanup.py

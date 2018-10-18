@@ -2,6 +2,7 @@
 import digdag
 import pathlib
 import sys
+import datetime
 
 DATA_DIR = pathlib.Path('/home/DATA/incoming/wrf')
 
@@ -15,10 +16,10 @@ def get_latest_date():
             if sst_tm <= tm:
                 sst_tm = tm
         if f.name.startswith('gfs.'):
-            tm = datetime.datetime.strptime(f.name[:-4], 'gfs.%Y%m%d%H')
+            tm = datetime.datetime.strptime(f.name[0:15], 'gfs.%Y%m%d_%H')
             if gfs_tm <= tm:
                 gfs_tm = tm
     digdag.env.store({
-        'sst_tm': sst_tm.strftime('%Y-%m-%d_%H:%M:%S')
-        'gfs_tm': gfs_tm.strftime('%Y-%m-%d_%H:%M:%S')
+        'sst_tm': sst_tm.strftime('%Y-%m-%d_%H:%M:%S'),
+        'gfs_tm': gfs_tm.strftime('%Y-%m-%d_%H:%M:%S'),
     })
