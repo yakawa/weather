@@ -158,7 +158,7 @@ class WRF():
         subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
         os.chdir(cwd)
 
-    def process(self):
+    def preprocess_wrf(self):
         cwd = os.getcwd()
         os.chdir(self.WPS_dir)
         subprocess.run([str(self.WPS_dir / 'metgrid.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)

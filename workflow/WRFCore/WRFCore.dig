@@ -28,3 +28,9 @@ _export:
 
 +preprocess_gfs:
   py>: task.WRF.WRF.preprocess_gfs
+
++preprocess_wrf_fillin:
+  py>: task.WRF.WRF.fillin_wrf_template
+
++preprocess_wrf:
+  py>: task.WRF.WRF.preprocess_wrf
