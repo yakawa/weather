@@ -5,6 +5,7 @@ import pathlib
 import datetime
 import sys
 import subprocess
+import os
 
 import jinja2
 
@@ -73,8 +74,10 @@ class WRF():
             f.write(tmpl.render(tm=tm, lat=lat, lon=lon, dx=dx, dy=dy, nx=nx, ny=ny))
 
     def preprocess_sst(self):
+        cwd = os.getcwd()
         os.chdir(self.WPS_dir)
         tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S')
-        subprocess.run([self.CSH, './link_grib.csh', str(self.DATA_dir / tm.strftime('sst.%Y%m%d'))], check=True)
+        subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_dir / tm.strftime('sst.%Y%m%d'))], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
         self.VTABLE.symlink_to(self.WPS_dir / 'ungrib' / 'Variable_Tables' / 'Vtable.SST')
-        subprocess.run([str(self.WPS_dir / 'ungrid.exe'),], check=True)
+        subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+        os.chdir(cwd)
