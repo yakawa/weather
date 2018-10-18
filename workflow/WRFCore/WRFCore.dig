@@ -1,0 +1,16 @@
+timezone: UTC
+
+_export:
+  python: /usr/bin/env python3
+
++cleanup:
+  sh>: /home/weather/tools/WRFCore/cleanup.py
+
++get_date:
+  py>: py.get_latest_date
+
++preprocess_sst:
+  echo>: /home/weather/tools/WRFCore/pre_sst.py ${WRF.lat} ${WRF.lon} ${WRF.dx} ${WRF.dy} ${WRF.nx} ${WRF.ny} ${sst_tm}
+
++preprocess_gfs:
+  echo>: /home/weather/tools/WRFCore/pre_gfs.py ${WRF.lat} ${WRF.lon} ${WRF.dx} ${WRF.dy} ${WRF.nx} ${WRF.ny} ${gfs_tm} ${sst_tm}
