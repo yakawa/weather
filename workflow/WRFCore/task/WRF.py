@@ -5,6 +5,8 @@ import pathlib
 import datetime
 import sys
 
+import jinja2
+
 class WRF():
     def __init__(self):
         self.WRF_dir = pathlib.Path('/home/WRF/WRF/run')
@@ -51,15 +53,15 @@ class WRF():
         })
 
     def fillin_sst_template(self):
-        env = jinja2.Environment(loader=jinja2.FileSystemLoader(self.TEMPLATE_dir, encoding='utf8'))
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(self.TEMPLATE_dir), encoding='utf8'))
         tmpl = env.get_template('namelist.wps.sst')
 
-        lat = digdag.env.params['WRF.lat']
-        lon = digdag.env.params['WRF.lon']
-        dx = digdag.env.params['WRF.dx']
-        dy = digdag.env.params['WRF.dy']
-        nx = digdag.env.params['WRF.nx']
-        ny = digdag.env.params['WRF.ny']
+        lat = digdag.env.params['WRF']['lat']
+        lon = digdag.env.params['WRF']['lon']
+        dx = digdag.env.params['WRF']['dx']
+        dy = digdag.env.params['WRF']['dy']
+        nx = digdag.env.params['WRF']['nx']
+        ny = digdag.env.params['WRF']['ny']
         tm = digdag.env.params['sst_tm']
 
         with (self.WPS_dir / 'namelist.wps').open('w') as f:

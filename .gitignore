@@ -16,6 +16,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .env
+.python_history
 
 ## Data Cache
 cache/GSM/*
