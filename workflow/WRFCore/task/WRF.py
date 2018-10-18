@@ -10,6 +10,7 @@ class WRF():
         self.WRF_dir = pathlib.Path('/home/WRF/WRF/run')
         self.WPS_dir = pathlib.Path('/home/WRF/WPS')
         self.DATA_dir = pathlib.Path('/home/DATA/incoming/wrf')
+        self.TEMPLATE_dir = pathlib.Path('/home/weather/etc/WRF/template')
 
     def cleanup(self):
         self.delete_wps_dir()
@@ -48,3 +49,18 @@ class WRF():
             'sst_tm': sst_tm.strftime('%Y-%m-%d_%H:%M:%S'),
             'gfs_tm': gfs_tm.strftime('%Y-%m-%d_%H:%M:%S'),
         })
+
+    def fillin_template(self):
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(self.TEMPLATE_dir, encoding='utf8'))
+        tmpl = env.get_template('namelist.wps.sst')
+
+        lat = digdag.env.params['WRF.lat']
+        lon = digdag.env.params['WRF.lon']
+        dx = digdag.env.params['WRF.dx']
+        dy = digdag.env.params['WRF.dy']
+        nx = digdag.env.params['WRF.nx']
+        ny = digdag.env.params['WRF.ny']
+        tm = digdag.env.params['sst_tm']
+
+        with (self.WPS_dir / 'namelist.wps').open('w') as f:
+            f.write(tmpl.render(tm=tm, lat=lat, lon=lon, dx=dx, dy=dy, nx=nx, ny=ny))
