@@ -12,18 +12,18 @@ class WRF():
         self.DATA_dir = pathlib.Path('/home/DATA/incoming/wrf')
 
     def cleanup(self):
-        digdag.env.add_subtask(WRF._delete_wps_dir)
-        digdag.env.add_subtask(WRF._delete_wrf_dir)
+        self.delete_wps_dir()
+        self.delete_wrf_dir()
 
-    def _delete_wps_dir(self):
+    def delete_wps_dir(self):
         file_prefix = ('FILE:', 'GRIBFILE', 'met_em.d', 'Vtable')
-        for f in WPS_dir.iterdir():
+        for f in self.WPS_dir.iterdir():
 
             if f.name.startswith(file_prefix):
                 f.unlink()
                 continue
 
-    def _delete_wrf_dir(self):
+    def delete_wrf_dir(self):
         file_prefix = ('met_em.d', 'rsl.', 'wrfinput', 'wrfbdy', 'wrfrst_', 'wrfout_')
         for f in self.WRF_dir.iterdir():
 
@@ -31,11 +31,11 @@ class WRF():
                 f.unlink()
                 continue
 
-    def get_latest_date():
+    def get_latest_date(self):
         sst_tm = datetime.datetime(year=1, month=1, day=1)
         gfs_tm = datetime.datetime(year=1, month=1, day=1)
 
-        for f in sorted(DATA_DIR.iterdir()):
+        for f in self.DATA_dir.iterdir():
             if f.name.startswith('sst.'):
                 tm = datetime.datetime.strptime(f.name, 'sst.%Y%m%d')
                 if sst_tm <= tm:
