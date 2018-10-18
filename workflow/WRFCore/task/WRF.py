@@ -100,6 +100,41 @@ class WRF():
         with (self.WPS_dir / 'namelist.wps').open('w') as f:
             f.write(tmpl.render(start_tm=start_tm, end_tm=end_tm, sst_tm=sst_tm, lat=lat, lon=lon, dx=dx, dy=dy, nx=nx, ny=ny, map=proj, run_hour=run_hour, interval=interval))
 
+    def fillin_wrf_template(self):
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(self.TEMPLATE_dir), encoding='utf8'))
+        tmpl = env.get_template('namelist.input')
+
+        dx = digdag.env.params['WRF']['dx']
+        dy = digdag.env.params['WRF']['dy']
+        nx = digdag.env.params['WRF']['nx']
+        ny = digdag.env.params['WRF']['ny']
+        tm = digdag.env.params['gfs_tm']
+        start_tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
+        step = 90
+        if tm.hour == 12:
+            end_tm = (tm + datetime.timedelta(hours=16*24))
+            interval = 6 * 3600
+            run_hour = 16 * 24
+        else:
+            end_tm = (tm + datetime.timedelta(hours=5*24))
+            interval = 12 * 3600
+            run_hour = 5 * 24
+        tm_s_year = start_tm.year
+        tm_s_month = start_tm.month
+        tm_s_day = start_tm.day
+        tm_s_hour = start_tm.hour
+        tm_e_year = end_tm.year
+        tm_e_month = end_tm.month
+        tm_e_day = end_tm.day
+        tm_e_hour = end_tm.hour
+
+
+
+        with (self.WRF_dir / 'namelist.wps').open('w') as f:
+            f.write(tmpl.render(run_hour=run_hour,
+                                tm_s_year=tm_s_year, tm_s_month=tm_s_month, tm_s_day=tm_s_day, tm_s_hour=tm_s_hour,
+                                tm_e_year=tm_e_year, tm_e_month=tm_e_month, tm_e_day=tm_e_day, tm_e_hour=tm_e_hour,
+                                interval=interval, step=step, nx=nx, ny=ny, dx=dx, dy=dy))
 
     def preprocess_sst(self):
         cwd = os.getcwd()
@@ -121,4 +156,10 @@ class WRF():
             self.VTABLE.unlink()
         self.VTABLE.symlink_to(self.WPS_dir / 'ungrib' / 'Variable_Tables' / 'Vtable.GFS')
         subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+        os.chdir(cwd)
+
+    def process(self):
+        cwd = os.getcwd()
+        os.chdir(self.WPS_dir)
+        subprocess.run([str(self.WPS_dir / 'metgrid.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
         os.chdir(cwd)
