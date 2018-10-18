@@ -90,11 +90,11 @@ class WRF():
         tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
         if tm.hour == 12:
             end_tm = (tm + datetime.timedelta(hours=16*24)).strftime('%Y-%m-%d_%H:%M:%S')
-            interval = 6
+            interval = 6 * 3600
             run_hour = 16 * 24
         else:
             end_tm = (tm + datetime.timedelta(hours=5*24)).strftime('%Y-%m-%d_%H:%M:%S')
-            interval = 12
+            interval = 12 * 3600
             run_hour = 5 * 24
 
         with (self.WPS_dir / 'namelist.wps').open('w') as f:
