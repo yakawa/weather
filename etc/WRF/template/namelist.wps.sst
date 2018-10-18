@@ -1,0 +1,38 @@
+&share
+  wrf_core = 'ARW',
+  max_dom = 1,
+  start_date = '{{ tm  }}',
+  end_date   = '{{ tm }}',
+  interval_seconds = 10800
+  io_form_geogrid = 2,
+ /
+
+&geogrid
+  parent_id         =   1,
+  parent_grid_ratio =   1,
+  i_parent_start    =   1,
+  j_parent_start    =   1,
+  e_we              =  {{ nx }},
+  e_sn              =  {{ ny }},
+  geog_data_res     = '30s',
+  dx = {{ dx }},
+  dy = {{ dy }},
+  map_proj = 'mercator',
+  ref_lat   =  {{ lat }},
+  ref_lon   =  {{ lon }},
+  truelat1  =  {{ lat }},
+  truelat2  =  0,
+  stand_lon = {{ lon }},
+  geog_data_path = '/home/WRF/lib/WPS_GEOG/'
+/
+
+&ungrib
+  out_format = 'WPS',
+  prefix = 'SST',
+/
+
+&metgrid
+  fg_name = 'FILE'
+  io_form_metgrid = 2,
+  constants_name = '/home/WRF/WPS/SST:{{ tm }}'
+/
