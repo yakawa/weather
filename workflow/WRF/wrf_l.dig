@@ -1,23 +1,8 @@
-timezone: UTC
-
 schedule:
   cron>: 0 16 * * *
 
-sla:
-  duration: 05:30:00
-  fail: true
-  +notice:
-    +clean_up:
-      sh>: /home/weather/tools/WRF/remove_gfs.py GFS_l -c ${moment(session_time).format("YYYYMMDDHHmm")}
-    +kill_task:
-      sh>: /home/weather/tools/digdag/kill_attempt.sh ${session_id}
+_export:
+  wrf: wrf_l
+  gfs: gfs_l
 
-+check_files:
-  sh>: /home/weather/tools/WRF/file_checker.py GFS_l -c ${moment(session_time).format("YYYYMMDDHHmm")}
-
-+sync_gfs: 
-  sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf weather@wrf001.hiyorimi.jp:/home/DATA/incoming/wrf
-
-+remove_gfs:
-  sh>: /home/weather/tools/WRF/remove_gfs.py GFS_l -c ${moment(session_time).format("YYYYMMDDHHmm")}
-
+!include wrf.dig
