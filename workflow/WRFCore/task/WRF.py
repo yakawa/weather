@@ -4,6 +4,7 @@ import digdag
 import pathlib
 import datetime
 import sys
+import subprocess
 
 import jinja2
 
@@ -13,13 +14,17 @@ class WRF():
         self.WPS_dir = pathlib.Path('/home/WRF/WPS')
         self.DATA_dir = pathlib.Path('/home/DATA/incoming/wrf')
         self.TEMPLATE_dir = pathlib.Path('/home/weather/etc/WRF/template')
+        self.VTABLE = self.WPS_dir / 'Vtable'
+
+        self.CSH = '/bin/csh'
+
 
     def cleanup(self):
         self.delete_wps_dir()
         self.delete_wrf_dir()
 
     def delete_wps_dir(self):
-        file_prefix = ('FILE:', 'GRIBFILE', 'met_em.d', 'Vtable')
+        file_prefix = ('FILE:', 'GRIBFILE', 'met_em.d', 'Vtable', 'SST:')
         for f in self.WPS_dir.iterdir():
 
             if f.name.startswith(file_prefix):
@@ -66,3 +71,10 @@ class WRF():
 
         with (self.WPS_dir / 'namelist.wps').open('w') as f:
             f.write(tmpl.render(tm=tm, lat=lat, lon=lon, dx=dx, dy=dy, nx=nx, ny=ny))
+
+    def preprocess_sst(self):
+        os.chdir(self.WPS_dir)
+        tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S')
+        subprocess.run([self.CSH, './link_grib.csh', str(self.DATA_dir / tm.strftime('sst.%Y%m%d'))], check=True)
+        self.VTABLE.symlink_to(self.WPS_dir / 'ungrib' / 'Variable_Tables' / 'Vtable.SST')
+        subprocess.run([str(self.WPS_dir / 'ungrid.exe'),], check=True)
