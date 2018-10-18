@@ -1,8 +1,0 @@
-timezone: UTC
-
-_export:
-  wrf : wrf_l
-  gfs : GFS_l
-
-!include : conf.dig
-!include : WRFCore.dig
