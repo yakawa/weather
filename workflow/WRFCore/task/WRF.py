@@ -85,7 +85,7 @@ class WRF():
         dy = digdag.env.params['WRF']['dy']
         nx = digdag.env.params['WRF']['nx']
         ny = digdag.env.params['WRF']['ny']
-        sst_tm = digdag.env.params['sst_tm']
+        sst_tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S').strftime('%Y-%m-%d_%H')
         start_tm = digdag.env.params['gfs_tm']
         tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
         if tm.hour == 12:
@@ -162,4 +162,15 @@ class WRF():
         cwd = os.getcwd()
         os.chdir(self.WPS_dir)
         subprocess.run([str(self.WPS_dir / 'metgrid.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+
+        for fn in self.WPS_dir.iterdir():
+            if fn.name.startswith('met_em.'):
+                if (self.WRF_dir / fn.name).exists() is True:
+                    (self.WRF_dir / fn.name).unlink()
+                fn.symlink_to(self.WRF_dir / fn.name)
+
+        os.chdir(self.WRF_dir)
+
+        subprocess.run([str(self.WRF_dir / 'real.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+
         os.chdir(cwd)
