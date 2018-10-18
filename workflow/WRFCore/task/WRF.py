@@ -50,7 +50,7 @@ class WRF():
             'gfs_tm': gfs_tm.strftime('%Y-%m-%d_%H:%M:%S'),
         })
 
-    def fillin_template(self):
+    def fillin_sst_template(self):
         env = jinja2.Environment(loader=jinja2.FileSystemLoader(self.TEMPLATE_dir, encoding='utf8'))
         tmpl = env.get_template('namelist.wps.sst')
 
