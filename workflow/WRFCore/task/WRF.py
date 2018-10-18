@@ -109,14 +109,14 @@ class WRF():
         nx = digdag.env.params['WRF']['nx']
         ny = digdag.env.params['WRF']['ny']
         tm = digdag.env.params['gfs_tm']
-        start_tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
+        start_tm = datetime.datetime.strptime(tm, '%Y-%m-%d_%H:%M:%S')
         step = 90
-        if tm.hour == 12:
-            end_tm = (tm + datetime.timedelta(hours=16*24))
+        if start_tm.hour == 12:
+            end_tm = (start_tm + datetime.timedelta(hours=16*24))
             interval = 6 * 3600
             run_hour = 16 * 24
         else:
-            end_tm = (tm + datetime.timedelta(hours=5*24))
+            end_tm = (start_tm + datetime.timedelta(hours=5*24))
             interval = 12 * 3600
             run_hour = 5 * 24
         tm_s_year = start_tm.year
