@@ -11,6 +11,9 @@ _export:
     ny: 200
   python: /usr/bin/python3
 
++ready:
+  sh>: /bin/rm -rf /home/DATA/incoming/wrf/.done
+
 +cleanup:
   py>: task.WRF.WRF.cleanup
 
@@ -47,3 +50,7 @@ _export:
 
   +cleanup:
     sh>: /bin/rm -rf /home/DATA/outgoing/wrf/wrfout_*
+
+  +notify_to_processor:
+    sh>: ssh weather@weather-process.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done"
+
