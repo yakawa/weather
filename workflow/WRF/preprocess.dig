@@ -1,5 +1,16 @@
 timezone: UTC
 
+schedule:
+    cron>: 5 4,10,16,22 * * *
+
+sla:
+  duration: 5:00
+  +notice:
+    +notice_to:
+      echo>: TimedOut!
+    +kill_task:
+      sh>: /home/weather/tools/digdag/kill_attempt.sh ${session_id}
+
 _export:
   python: /usr/bin/python3
 
