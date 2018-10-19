@@ -54,6 +54,10 @@ def main(args):
     if fp.name in fq:
         shutil.copy(str(fp), str(DST / fp.name))
 
+    with (DST / '.done').open('w') as f:
+        f.write()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__DESC__)
     parser.add_argument('FILE', type=str, help='File Path')
