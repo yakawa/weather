@@ -1,2 +1,1 @@
-/home/DATA/incoming/wrf/.done IN_CLOSE_WRITE /usr/local/bin/digdag start WRFCore WRFCore
-
+/home/DATA/incoming/wrf/.done IN_ACCESS,IN_MODIFY,IN_ATTRIB /usr/local/bin/digdag start WRFCore WRFCore --session now
