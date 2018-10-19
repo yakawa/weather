@@ -40,7 +40,7 @@ class WRFPreProcess:
         digdag.env.store({'init': init.strftime('gfs.%Y%m%d_%H_'),})
         prefix = init.strftime('gfs.%Y%m%d_%H_')
         for fn in self.DATA_dir.iterdir():
-            if not fn.name.startswith(prefix) and fn.name.startswith('gfs'):
+            if (not fn.name.startswith(prefix)) and fn.name.startswith('gfs'):
                 fn.unlink()
 
 
