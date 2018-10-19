@@ -7,6 +7,7 @@ import pathlib
 import sys
 import subprocess
 import os
+import time
 
 import jinja2
 
@@ -46,12 +47,33 @@ class WRFPreProcess(WRFBase):
 
         self.DATA_dir = pathlib.Path('/home/DATA/outgoing/wrf')
 
+    def _make_fp_que(self, init):
+        q = []
+        if init.hour == 12:
+            for ft in range(0, 396, 12):
+                q.append('gfs.{}_{}.done'.format(init.strftime('%Y%m%d_%H'), ft))
+        else:
+            for ft in range(0, 123, 3):
+                q.append('gfs.{}_{}.done'.format(init.strftime('%Y%m%d_%H'), ft))
+        return q
+
     def check_files(self):
-        init = WRFTools.get_init_time()
+        tm = datetimn.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S%Z')
+        init = WRFTools.get_init_time(tm.strftime('%Y%m%d%H'))
         digdag.env.store({'init': init.strftime('gfs.%Y%m%d_%H_'),})
+        fq = self._make_fp_que(init)
+        for fn in fq:
+            while True:
+                if (self.DATA_dir / fn).exists() is True:
+                    break
+                time.sleep(5)
+
+
         prefix = init.strftime('gfs.%Y%m%d_%H_')
         for fn in self.DATA_dir.iterdir():
             if (not fn.name.startswith(prefix)) and fn.name.startswith('gfs'):
+                fn.unlink()
+            if fn.name.endswith('.done'):
                 fn.unlink()
 
 
@@ -141,11 +163,11 @@ class WRF(WRFBase):
         tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
         if tm.hour == 12:
             end_tm = (tm + datetime.timedelta(hours=16*24)).strftime('%Y-%m-%d_%H:%M:%S')
-            interval = 6 * 3600
+            interval = 12 * 3600
             run_hour = 16 * 24
         else:
             end_tm = (tm + datetime.timedelta(hours=5*24)).strftime('%Y-%m-%d_%H:%M:%S')
-            interval = 12 * 3600
+            interval = 3 * 3600
             run_hour = 5 * 24
 
         with (self.WPS_dir / 'namelist.wps').open('w') as f:
@@ -164,11 +186,11 @@ class WRF(WRFBase):
         step = 90
         if start_tm.hour == 12:
             end_tm = (start_tm + datetime.timedelta(hours=16*24))
-            interval = 6 * 3600
+            interval = 12 * 3600
             run_hour = 16 * 24
         else:
             end_tm = (start_tm + datetime.timedelta(hours=5*24))
-            interval = 12 * 3600
+            interval = 3 * 3600
             run_hour = 5 * 24
         tm_s_year = start_tm.year
         tm_s_month = start_tm.month
