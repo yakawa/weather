@@ -4,6 +4,7 @@ import digdag
 
 import datetime
 import pathlib
+from timeout_decorator import timeout
 
 class WRFTools:
     def __init__(self):
@@ -34,9 +35,19 @@ class WRFPreProcess:
     def __init__(self):
         self.DATA_dir = pathlib.Path('/home/weather/outgoing/wrf')
 
+    @timeout(3600)
     def check_files(self):
         init = WRFTools.get_init_time()
         digdag.env.store({'init': init,})
+        prefix = init.strftime('gfs.%Y%m%d_%H_')
         for fn in self.DATA_dir.iterdir():
-            if not fn.name.stratswith(init.strftime('gfs.%Y%m&d_%H_')):
+            if not fn.name.stratswith(prefix):
+                fn.unlink()
+
+
+    def remove_gfs(self):
+        init = digdag.env.params['init']
+        prefix = init.strftime('gfs.%Y%m%d_%H_')
+        for fn in self.DATA_dir.iterdir():
+            if fn.name.stratswith(prefix):
                 fn.unlink()

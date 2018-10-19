@@ -13,4 +13,4 @@ timezone: UTC
   sh>: /usr/bin/ssh weather@wrf001.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done"
 
 +remove_gfs:
-  sh>: /bin/rm -rf /home/DATA/outgoing/wrf/gfs.${moment(init).format("YYYYMMDD_HH_")}*
+  py>: task.WRF.WRFPreProcess.remove_gfs
