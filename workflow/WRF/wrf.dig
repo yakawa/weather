@@ -17,3 +17,6 @@ sla:
 
 +remove_gfs:
   sh>: /home/weather/tools/WRF/remove_gfs.py ${gfs} -c ${moment(session_time).format("YYYYMMDDHHmm")}
+
++notify_to_wrf:
+  sh>: ssh weather@wrf001.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done"
