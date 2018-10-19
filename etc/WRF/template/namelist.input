@@ -1,6 +1,6 @@
 &time_control
  run_days                            = 0,
- run_hour                            = {{ run_hour }},
+ run_hours                           = {{ run_hour }},
  run_minutes                         = 0,
  run_seconds                         = 0,
  start_year                          = {{ tm_s_year }},
