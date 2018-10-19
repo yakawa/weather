@@ -38,12 +38,12 @@ _export:
 +run_wrf:
   py>: task.WRF.WRF.run_wrf
 
-+wrapup_wrf:
-  sh>: /bin/mv /home/WRF/WRF/run/wrfout_* /home/DATA/outgoing/wrf/
-
 +wrapup:
-  sh>: /usr/bin/rsync -avzr /home/DATA/outgoing/wrf/ weather@weather-process.hiyorimi.jp:/home/DATA/incoming/wrf/
+  +move_result:
+    sh>: /bin/mv /home/WRF/WRF/run/wrfout_* /home/DATA/outgoing/wrf/
 
-+wrapup_clean:
-  sh>: /bin/rm -rf /home/DATA/outgoing/wrf/wrfout_*
+  +sync_result:
+    sh>: /usr/bin/rsync -avzr /home/DATA/outgoing/wrf/ weather@weather-process.hiyorimi.jp:/home/DATA/incoming/wrf/
 
+  +cleanup:
+    sh>: /bin/rm -rf /home/DATA/outgoing/wrf/wrfout_*
