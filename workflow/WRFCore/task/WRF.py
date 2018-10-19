@@ -167,7 +167,7 @@ class WRF():
             if fn.name.startswith('met_em.'):
                 if (self.WRF_dir / fn.name).exists() is True:
                     (self.WRF_dir / fn.name).unlink()
-                fn.symlink_to(self.WRF_dir / fn.name)
+                (self.WRF_dir / fn.name).symlink_to(fn)
 
         os.chdir(self.WRF_dir)
 
