@@ -3,7 +3,7 @@
   max_dom = 1,
   start_date = '{{ start_tm  }}',
   end_date   = '{{ end_tm }}',
-  interval_seconds = {{ interval }}
+  interval_seconds = {{ interval }},
   io_form_geogrid = 2,
 /
 
@@ -32,7 +32,8 @@
 /
 
 &metgrid
-  fg_name = 'FILE'
+  fg_name = 'FILE',
   io_form_metgrid = 2,
-  constants_name = './SST:{{ sst_tm }}'
+  constants_name = '/home/WRF/WPS/SST:{{ sst_tm }}',
 /
+
