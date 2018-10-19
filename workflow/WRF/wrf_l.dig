@@ -1,8 +1,0 @@
-schedule:
-  cron>: 0 16 * * *
-
-_export:
-  wrf: wrf_l
-  gfs: gfs_l
-
-!include wrf.dig

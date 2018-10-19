@@ -1,0 +1,16 @@
+timezone: UTC
+
++remove_mark:
+  sh>: /bin/rm -rf /home/DATA/outgoing/wrf/.done
+
++check_files:
+  py>: task.WRF.WRFPreProcess.check_files
+
++sync_files:
+  sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf/ weather@wrf001.hiyorimi.jp:/home/DATA/incoming/wrf
+
++notify_wrf:
+  sh>: /usr/bin/ssh weather@wrf001.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done"
+
++remove_gfs:
+  sh>: /bin/rm -rf /home/DATA/outgoing/wrf/gfs.${moment(init).format("YYYYMMDD_HH_")}*
