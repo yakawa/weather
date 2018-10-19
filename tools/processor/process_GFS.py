@@ -54,7 +54,7 @@ def main(args):
     if fp.name in fq:
         shutil.copy(str(fp), str(DST / fp.name))
 
-    with (DST / '.done').open('w') as f:
+    with (DST / fn.name + '.done').open('w') as f:
         f.write()
 
 
