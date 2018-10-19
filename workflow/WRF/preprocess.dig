@@ -1,5 +1,8 @@
 timezone: UTC
 
+_export:
+  python: /usr/bin/python3
+
 +remove_mark:
   sh>: /bin/rm -rf /home/DATA/outgoing/wrf/.done
 

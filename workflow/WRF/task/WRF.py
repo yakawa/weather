@@ -33,21 +33,19 @@ class WRFTools:
 
 class WRFPreProcess:
     def __init__(self):
-        self.DATA_dir = pathlib.Path('/home/weather/outgoing/wrf')
+        self.DATA_dir = pathlib.Path('/home/DATA/outgoing/wrf')
 
-    @timeout(3600)
     def check_files(self):
         init = WRFTools.get_init_time()
-        digdag.env.store({'init': init,})
+        digdag.env.store({'init': init.strftime('gfs.%Y%m%d_%H_'),})
         prefix = init.strftime('gfs.%Y%m%d_%H_')
         for fn in self.DATA_dir.iterdir():
-            if not fn.name.stratswith(prefix):
+            if not fn.name.startswith(prefix) and fn.name.startswith('gfs'):
                 fn.unlink()
 
 
     def remove_gfs(self):
-        init = digdag.env.params['init']
-        prefix = init.strftime('gfs.%Y%m%d_%H_')
+        prefix = digdag.env.params['init']
         for fn in self.DATA_dir.iterdir():
-            if fn.name.stratswith(prefix):
+            if fn.name.startswith(prefix):
                 fn.unlink()
