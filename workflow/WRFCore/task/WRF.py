@@ -18,7 +18,7 @@ class WRF():
         self.VTABLE = self.WPS_dir / 'Vtable'
 
         self.CSH = '/bin/csh'
-
+        self.MPIRUN = '/usr/bin/mpirun'
 
     def cleanup(self):
         self.delete_wps_dir()
@@ -130,7 +130,7 @@ class WRF():
 
 
 
-        with (self.WRF_dir / 'namelist.wps').open('w') as f:
+        with (self.WRF_dir / 'namelist.input').open('w') as f:
             f.write(tmpl.render(run_hour=run_hour,
                                 tm_s_year=tm_s_year, tm_s_month=tm_s_month, tm_s_day=tm_s_day, tm_s_hour=tm_s_hour,
                                 tm_e_year=tm_e_year, tm_e_month=tm_e_month, tm_e_day=tm_e_day, tm_e_hour=tm_e_hour,
@@ -171,6 +171,15 @@ class WRF():
 
         os.chdir(self.WRF_dir)
 
-        subprocess.run([str(self.WRF_dir / 'real.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+        subprocess.run([self.MPIRUN, '-np', '1', str(self.WRF_dir / 'real.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+
+        os.chdir(cwd)
+
+
+    def run_wrf(self):
+        cwd = os.getcwd()
+        os.chdir(self.WRF_dir)
+
+        subprocess.run([self.MPIRUN, str(self.WRF_dir / 'wrf.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
 
         os.chdir(cwd)

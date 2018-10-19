@@ -34,3 +34,6 @@ _export:
 
 +preprocess_wrf:
   py>: task.WRF.WRF.preprocess_wrf
+
++run_wrf:
+  py>: task.WRF.WRF.run_wrf
