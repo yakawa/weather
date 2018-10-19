@@ -1,7 +1,7 @@
 timezone: UTC
 
-schedule:
-    cron>: 5 4,10,16,22 * * *
+#schedule:
+#    cron>: 5 4,10,16,22 * * *
 
 sla:
   duration: 5:00
