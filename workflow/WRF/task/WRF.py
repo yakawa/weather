@@ -68,7 +68,6 @@ class WRFPreProcess(WRFBase):
                     break
                 time.sleep(5)
 
-
         prefix = init.strftime('gfs.%Y%m%d_%H_')
         for fn in self.DATA_dir.iterdir():
             if (not fn.name.startswith(prefix)) and fn.name.startswith('gfs'):

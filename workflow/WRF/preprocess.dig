@@ -14,9 +14,6 @@ sla:
 _export:
   python: /usr/bin/python3
 
-+remove_mark:
-  sh>: /bin/rm -rf /home/DATA/outgoing/wrf/.done
-
 +check_files:
   py>: task.WRF.WRFPreProcess.check_files
 
