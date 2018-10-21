@@ -1,1 +1,1 @@
-/home/DATA/incoming/wrf/.done IN_ACCESS,IN_MODIFY,IN_ATTRIB /usr/local/bin/digdag start WRFCore WRFCore --session now
+/home/DATA/incoming/wrf IN_MOVED_TO,IN_NO_LOOP /usr/local/bin/digdag start WRF wrf --session now
