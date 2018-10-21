@@ -8,6 +8,7 @@ import sys
 import subprocess
 import os
 import time
+import logging
 
 import jinja2
 
@@ -51,18 +52,20 @@ class WRFPreProcess(WRFBase):
         q = []
         if init.hour == 12:
             for ft in range(0, 396, 12):
-                q.append('gfs.{}_{}.done'.format(init.strftime('%Y%m%d_%H'), ft))
+                q.append('gfs.{}_{:03d}.done'.format(init.strftime('%Y%m%d_%H'), ft))
         else:
             for ft in range(0, 123, 3):
-                q.append('gfs.{}_{}.done'.format(init.strftime('%Y%m%d_%H'), ft))
+                q.append('gfs.{}_{:03d}.done'.format(init.strftime('%Y%m%d_%H'), ft))
         return q
 
     def check_files(self):
-        tm = datetimn.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S%Z')
-        init = WRFTools.get_init_time(tm.strftime('%Y%m%d%H'))
+        tm = datetime.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S+00:00')
+        init = WRFTools.get_init_time(tm.strftime('%Y%m%d%H%M'))
+        print(tm, init)
         digdag.env.store({'init': init.strftime('gfs.%Y%m%d_%H_'),})
         fq = self._make_fp_que(init)
         for fn in fq:
+            print("Checking {}".format(self.DATA_dir / fn))
             while True:
                 if (self.DATA_dir / fn).exists() is True:
                     break
