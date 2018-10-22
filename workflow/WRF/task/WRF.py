@@ -9,6 +9,8 @@ import subprocess
 import os
 import time
 import logging
+import socket
+import multiprocessing
 
 import jinja2
 
@@ -36,6 +38,25 @@ class WRFTools:
             target = target.replace(hour=18, minute=0)
         return target
 
+    @classmethod
+    def set_hostname(cls):
+        host = socket.gethostname().split('.')[0]
+        digdag.env.store({
+            'hostname' : host,
+            })
+
+    @classmethod
+    def set_run_time(cls):
+        tm = datetime.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S+00:00')
+        digdag.env.store({
+            'run': {
+                'year': tm.year,
+                'month': tm.month,
+                'day': tm.day,
+                'hour': tm.hour,
+                }
+            })
+
 class WRFBase():
     def __init__(self):
         self.WRF_dir = pathlib.Path('/home/WRF/WRF/run')
@@ -46,49 +67,86 @@ class WRFPreProcess(WRFBase):
     def __init__(self):
         super().__init__()
 
-        self.DATA_dir = pathlib.Path('/home/DATA/outgoing/wrf')
+        self.DATA_short_dir = pathlib.Path('/home/DATA/outgoing/wrf_short')
+        self.DATA_week_dir = pathlib.Path('/home/DATA/outgoing/wrf_week')
 
-    def _make_fp_que(self, init):
+    def _make_fp_que_short(self, init):
         q = []
-        if init.hour == 12:
+        for ft in range(0, 123, 3):
+            q.append('gfs.{}_{:03d}.done'.format(init.strftime('%Y%m%d_%H'), ft))
+        return q
+
+    def _make_fp_que_week(self, init):
+        q = []
+        if init.hour == 12 or init.hour == 0:
             for ft in range(0, 396, 12):
-                q.append('gfs.{}_{:03d}.done'.format(init.strftime('%Y%m%d_%H'), ft))
-        else:
-            for ft in range(0, 123, 3):
                 q.append('gfs.{}_{:03d}.done'.format(init.strftime('%Y%m%d_%H'), ft))
         return q
 
-    def check_files(self):
+    def check_files_short(self, term):
         tm = datetime.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S+00:00')
         init = WRFTools.get_init_time(tm.strftime('%Y%m%d%H%M'))
-        print(tm, init)
         digdag.env.store({'init': init.strftime('gfs.%Y%m%d_%H_'),})
-        fq = self._make_fp_que(init)
+
+        fq = self._make_fp_que_short(init)
+
         for fn in fq:
-            print("Checking {}".format(self.DATA_dir / fn))
+            print("Checking {}".format(self.DATA_short_dir / fn))
             while True:
-                if (self.DATA_dir / fn).exists() is True:
+                if (self.DATA_short_dir / fn).exists() is True:
                     break
                 time.sleep(5)
 
         prefix = init.strftime('gfs.%Y%m%d_%H_')
-        for fn in self.DATA_dir.iterdir():
+        for fn in self.DATA_short_dir.iterdir():
+            if (not fn.name.startswith(prefix)) and fn.name.startswith('gfs'):
+                fn.unlink()
+            if fn.name.endswith('.done'):
+                fn.unlink()
+
+    def check_files_week(self, term):
+        tm = datetime.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S+00:00')
+        init = WRFTools.get_init_time(tm.strftime('%Y%m%d%H%M'))
+        digdag.env.store({'init': init.strftime('gfs.%Y%m%d_%H_'),})
+
+        fq = self._make_fp_que_week(init)
+
+        for fn in fq:
+            print("Checking {}".format(self.DATA_week_dir / fn))
+            while True:
+                if (self.DATA_week_dir / fn).exists() is True:
+                    break
+                time.sleep(5)
+
+        prefix = init.strftime('gfs.%Y%m%d_%H_')
+        for fn in self.DATA_week_dir.iterdir():
             if (not fn.name.startswith(prefix)) and fn.name.startswith('gfs'):
                 fn.unlink()
             if fn.name.endswith('.done'):
                 fn.unlink()
 
 
-    def remove_gfs(self):
+    def remove_gfs_short(self):
         prefix = digdag.env.params['init']
-        for fn in self.DATA_dir.iterdir():
+        for fn in self.DATA_short_dir.iterdir():
+            if fn.name.startswith(prefix):
+                fn.unlink()
+        for fn in self.DATA_week_dir.iterdir():
+            if fn.name.startswith(prefix):
+                fn.unlink()
+
+    def remove_gfs_week(self):
+        prefix = digdag.env.params['init']
+        for fn in self.DATA_week_dir.iterdir():
             if fn.name.startswith(prefix):
                 fn.unlink()
 
 class WRF(WRFBase):
     def __init__(self):
         super().__init__()
-        self.DATA_dir = pathlib.Path('/home/DATA/incoming/wrf')
+        self.DATA_gfs_dir = pathlib.Path('/home/DATA/incoming/wrf')
+        self.DATA_sst_dir = pathlib.Path('/home/DATA/incoming/sst')
+
         self.TEMPLATE_dir = pathlib.Path('/home/weather/etc/WRF/template')
         self.VTABLE = self.WPS_dir / 'Vtable'
 
@@ -119,15 +177,17 @@ class WRF(WRFBase):
         sst_tm = datetime.datetime(year=1, month=1, day=1)
         gfs_tm = datetime.datetime(year=1, month=1, day=1)
 
-        for f in self.DATA_dir.iterdir():
-            if f.name.startswith('sst.'):
-                tm = datetime.datetime.strptime(f.name, 'sst.%Y%m%d')
-                if sst_tm <= tm:
-                    sst_tm = tm
+        for f in self.DATA_gfs_dir.iterdir():
             if f.name.startswith('gfs.'):
                 tm = datetime.datetime.strptime(f.name[0:15], 'gfs.%Y%m%d_%H')
                 if gfs_tm <= tm:
                     gfs_tm = tm
+        for f in self.DATA_sst_dir.iterdir():
+            if f.name.startswith('sst.'):
+                tm = datetime.datetime.strptime(f.name, 'sst.%Y%m%d')
+                if sst_tm <= tm:
+                    sst_tm = tm
+
         digdag.env.store({
             'sst_tm': sst_tm.strftime('%Y-%m-%d_%H:%M:%S'),
             'gfs_tm': gfs_tm.strftime('%Y-%m-%d_%H:%M:%S'),
@@ -163,7 +223,8 @@ class WRF(WRFBase):
         sst_tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S').strftime('%Y-%m-%d_%H')
         start_tm = digdag.env.params['gfs_tm']
         tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
-        if tm.hour == 12:
+        hostname = WRFTools.gethostname()
+        if hostname == 'wrf002':
             end_tm = (tm + datetime.timedelta(hours=16*24)).strftime('%Y-%m-%d_%H:%M:%S')
             interval = 12 * 3600
             run_hour = 16 * 24
@@ -185,8 +246,9 @@ class WRF(WRFBase):
         ny = digdag.env.params['WRF']['ny']
         tm = digdag.env.params['gfs_tm']
         start_tm = datetime.datetime.strptime(tm, '%Y-%m-%d_%H:%M:%S')
+        hostname = WRFTools.gethostname()
         step = 90
-        if start_tm.hour == 12:
+        if hostname == 'wrf002':
             end_tm = (start_tm + datetime.timedelta(hours=16*24))
             interval = 12 * 3600
             run_hour = 16 * 24
@@ -215,28 +277,28 @@ class WRF(WRFBase):
         cwd = os.getcwd()
         os.chdir(self.WPS_dir)
         tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S')
-        subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_dir / tm.strftime('sst.%Y%m%d'))], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+        subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_sst_dir / tm.strftime('sst.%Y%m%d'))], check=True)
         if self.VTABLE.exists() is True:
             self.VTABLE.unlink()
         self.VTABLE.symlink_to(self.WPS_dir / 'ungrib' / 'Variable_Tables' / 'Vtable.SST')
-        subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+        subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], check=True)
         os.chdir(cwd)
 
     def preprocess_gfs(self):
         cwd = os.getcwd()
         os.chdir(self.WPS_dir)
         tm = datetime.datetime.strptime(digdag.env.params['gfs_tm'], '%Y-%m-%d_%H:%M:%S')
-        subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_dir / tm.strftime('gfs.%Y%m%d_%H'))], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL)
+        subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_gfs_dir / tm.strftime('gfs.%Y%m%d_%H'))], check=True)
         if self.VTABLE.exists() is True:
             self.VTABLE.unlink()
         self.VTABLE.symlink_to(self.WPS_dir / 'ungrib' / 'Variable_Tables' / 'Vtable.GFS')
-        subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+        subprocess.run([str(self.WPS_dir / 'ungrib.exe'),], check=True)
         os.chdir(cwd)
 
     def preprocess_wrf(self):
         cwd = os.getcwd()
         os.chdir(self.WPS_dir)
-        subprocess.run([str(self.WPS_dir / 'metgrid.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+        subprocess.run([str(self.WPS_dir / 'metgrid.exe'),], check=True)
 
         for fn in self.WPS_dir.iterdir():
             if fn.name.startswith('met_em.'):
@@ -246,7 +308,7 @@ class WRF(WRFBase):
 
         os.chdir(self.WRF_dir)
 
-        subprocess.run([self.MPIRUN, '-np', '1', str(self.WRF_dir / 'real.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True)
+        subprocess.run([self.MPIRUN, '-np', '1', str(self.WRF_dir / 'real.exe'),], check=True)
 
         os.chdir(cwd)
 
@@ -254,7 +316,7 @@ class WRF(WRFBase):
     def run_wrf(self):
         cwd = os.getcwd()
         os.chdir(self.WRF_dir)
-        os.environ['OMP_NUM_THREADS'] = '4'
+        os.environ['OMP_NUM_THREADS'] = str(multiprocessing.cpu_count())
         os.environ['WRF_EM_CORE'] = '1'
         os.environ['WRF_NMM_CORE'] = '0'
         os.environ['WRF_DA_CORE'] = '0'
