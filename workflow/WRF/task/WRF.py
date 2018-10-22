@@ -219,7 +219,7 @@ class WRF(WRFBase):
         sst_tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S').strftime('%Y-%m-%d_%H')
         start_tm = digdag.env.params['gfs_tm']
         tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
-        hostname = WRFTools.gethostname()
+        hostname = digdag.env.params['hostname']
         if hostname == 'wrf002':
             end_tm = (tm + datetime.timedelta(hours=16*24)).strftime('%Y-%m-%d_%H:%M:%S')
             interval = 12 * 3600
@@ -242,7 +242,7 @@ class WRF(WRFBase):
         ny = digdag.env.params['WRF']['ny']
         tm = digdag.env.params['gfs_tm']
         start_tm = datetime.datetime.strptime(tm, '%Y-%m-%d_%H:%M:%S')
-        hostname = WRFTools.gethostname()
+        hostname = digdag.env.params['hostname']
         step = 90
         if hostname == 'wrf002':
             end_tm = (start_tm + datetime.timedelta(hours=16*24))
