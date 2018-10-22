@@ -21,46 +21,47 @@ _export:
   +get_runhour:
     py>: task.WRF.WRFTools.set_runtime
 
-if>: ${hostname} == "wrf001" || (${hostname} == "wrf002" && ${run.hour} == 12) || (${hostname} == 'wrf002' && ${run.hour} == 0)
-_do:
-  +preprocess:
-    +cleanup:
-      py>: task.WRF.WRF.cleanup
++wrf_run:
+  if>: ${hostname} == "wrf001" || (${hostname} == "wrf002" && ${run.hour} == 12) || (${hostname} == 'wrf002' && ${run.hour} == 0)
+  _do:
+    +preprocess:
+      +cleanup:
+        py>: task.WRF.WRF.cleanup
 
-    +get_date:
-      py>: task.WRF.WRF.get_latest_date
+      +get_date:
+        py>: task.WRF.WRF.get_latest_date
 
-    +preprocess_sst_fillin:
-      py>: task.WRF.WRF.fillin_sst_template
+      +preprocess_sst_fillin:
+        py>: task.WRF.WRF.fillin_sst_template
 
-    +preprocess_sst:
-      py>: task.WRF.WRF.preprocess_sst
+      +preprocess_sst:
+        py>: task.WRF.WRF.preprocess_sst
 
-    +preprocess_gfs_fillin:
-      py>: task.WRF.WRF.fillin_gfs_template
+      +preprocess_gfs_fillin:
+        py>: task.WRF.WRF.fillin_gfs_template
 
-    +preprocess_gfs:
-      py>: task.WRF.WRF.preprocess_gfs
+      +preprocess_gfs:
+        py>: task.WRF.WRF.preprocess_gfs
 
-    +preprocess_wrf_fillin:
-      py>: task.WRF.WRF.fillin_wrf_template
+      +preprocess_wrf_fillin:
+        py>: task.WRF.WRF.fillin_wrf_template
 
-    +preprocess_wrf:
-      py>: task.WRF.WRF.preprocess_wrf
+      +preprocess_wrf:
+        py>: task.WRF.WRF.preprocess_wrf
 
-  +wrf:
-    +run:
-      py>: task.WRF.WRF.run_wrf
+    +wrf:
+      +run:
+        py>: task.WRF.WRF.run_wrf
 
-  +wrapup:
-    +move_result:
-      sh>: /bin/mv /home/WRF/WRF/run/wrfout_* /home/DATA/outgoing/wrf/
+    +wrapup:
+      +move_result:
+        sh>: /bin/mv /home/WRF/WRF/run/wrfout_* /home/DATA/outgoing/wrf/
 
-    +sync_result:
-      sh>: /usr/bin/rsync -avzr /home/DATA/outgoing/wrf/ weather@weather-process.hiyorimi.jp:/home/DATA/incoming/wrf/
+      +sync_result:
+        sh>: /usr/bin/rsync -avzr /home/DATA/outgoing/wrf/ weather@weather-process.hiyorimi.jp:/home/DATA/incoming/wrf/
 
-    +cleanup:
-      sh>: /bin/rm -rf /home/DATA/outgoing/wrf/wrfout_*
+      +cleanup:
+        sh>: /bin/rm -rf /home/DATA/outgoing/wrf/wrfout_*
 
-    +notify_to_processor:
-      sh>: ssh weather@weather-process.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done"
+      +notify_to_processor:
+        sh>: ssh weather@weather-process.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done"
