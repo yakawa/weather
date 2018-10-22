@@ -8,7 +8,7 @@ import shutil
 
 __DESC__ = 'process SST'
 
-DST = pathlib.Path('/home/DATA/outgoing/wrf')
+DST = pathlib.Path('/home/DATA/outgoing/sst')
 
 def get_latest_sst():
     dt = None
