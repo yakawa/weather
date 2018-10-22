@@ -1,10 +1,10 @@
 timezone: UTC
 
-#schedule:
-#    cron>: 5 4,10,16,22 * * *
+schedule:
+    cron>: 5 4,10,16,22 * * *
 
 sla:
-  duration: 5:00
+  duration: 1:00
   +notice:
     +notice_to:
       echo>: TimedOut!
@@ -14,37 +14,50 @@ sla:
 _export:
   python: /usr/bin/python3
 
++get_hostname:
+  py>: task.WRF.WRFTools.set_hostname
+
 +get_runtime:
   py>: task.WRF.WRFTools.set_run_time
 
 +sync:
-  _parallel: true
+  if>: ${hostname == "weather-process"}
+  _do:
+    _parallel: true
 
-  +wrf001:
-    +check_files:
-      py>: task.WRF.WRFPreProcess.check_files_short
+    +wrf001:
+      if>: ${run.hour == 0 || run.hour == 6 || run.hour == 12 || run.hour == 18}
+      _do:
+        +check_files:
+          py>: task.WRF.WRFPreProcess.check_files_short
 
-    +sync:
-      sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf_short/ weather@wrf001.hiyorimi.jp:/home/DATA/incoming/wrf
+        +sync_sst:
+          sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/sst/ weather@wrf001.hiyorimi.jp:/home/DATA/incoming/sst
 
-    +notice:
-      sh>: /usr/bin/ssh weather@wrf001.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done; mv /home/DATA/incoming/wrf/.done /home/DATA/incoming/wrf/done"
+        +sync:
+          sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf_short/ weather@wrf001.hiyorimi.jp:/home/DATA/incoming/wrf
 
-    +remove:
-      py>: task.WRF.WRFPreProcess.remove_gfs_short
+        +notice:
+          sh>: /usr/bin/ssh weather@wrf001.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done; mv /home/DATA/incoming/wrf/.done /home/DATA/incoming/wrf/done"
+
+        +remove:
+          py>: task.WRF.WRFPreProcess.remove_gfs_short
 
 
-  +wrf002:
-    if>: ${run.hour == 12 || run.hour == 0}
-    _do:
-      +check_files:
-        py>: task.WRF.WRFPreProcess.check_files_week
+    +wrf002:
+      if>: ${run.hour == 12 || run.hour == 0}
+      _do:
+        +check_files:
+          py>: task.WRF.WRFPreProcess.check_files_week
 
-      +sync:
-        sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf_week/ weather@wrf002.hiyorimi.jp:/home/DATA/incoming/wrf
+        +sync_sst:
+          sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/sst/ weather@wrf002.hiyorimi.jp:/home/DATA/incoming/sst
 
-      +notice:
-        sh>: /usr/bin/ssh weather@wrf002.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done; mv /home/DATA/incoming/wrf/.done /home/DATA/incoming/wrf/done"
+        +sync:
+          sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf_week/ weather@wrf002.hiyorimi.jp:/home/DATA/incoming/wrf
 
-      +remove:
-        py>: task.WRF.WRFPreProcess.remove_gfs_week
+        +notice:
+          sh>: /usr/bin/ssh weather@wrf002.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done; mv /home/DATA/incoming/wrf/.done /home/DATA/incoming/wrf/done"
+
+        +remove:
+          py>: task.WRF.WRFPreProcess.remove_gfs_week
