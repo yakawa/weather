@@ -260,6 +260,6 @@ class WRF(WRFBase):
         os.environ['WRF_DA_CORE'] = '0'
         os.environ['MP_STACK_SIZE'] = '64000000'
 
-        subprocess.run([self.MPIRUN, str(self.WRF_dir / 'wrf.exe'),], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdin=subprocess.DEVNULL, check=True, shell=True)
+        subprocess.run([self.MPIRUN, str(self.WRF_dir / 'wrf.exe'),], check=True)
 
         os.chdir(cwd)
