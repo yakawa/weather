@@ -54,10 +54,10 @@ def main(args):
     fq_week = make_fp_que_week(init)
 
     if DST_short.exists() is False:
-        DST_short.mkdir(parent=True)
+        DST_short.mkdir()
 
     if DST_week.exists() is False:
-        DST_week.mkdir(parent=True)
+        DST_week.mkdir()
 
 
     if fp.name in fq_short:
