@@ -19,10 +19,10 @@ _export:
     py>: task.WRF.WRFTools.set_hostname
 
   +get_runhour:
-    py>: task.WRF.WRFTools.set_runtime
+    py>: task.WRF.WRFTools.set_run_time
 
 +wrf_run:
-  if>: ${hostname} == "wrf001" || (${hostname} == "wrf002" && ${run.hour} == 12) || (${hostname} == 'wrf002' && ${run.hour} == 0)
+  if>: ${hostname == "wrf001" || (hostname == "wrf002" && run.hour == 12) || (hostname == 'wrf002' && run.hour == 0)}
   _do:
     +preprocess:
       +cleanup:
