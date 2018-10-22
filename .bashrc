@@ -138,7 +138,8 @@ export NCARG_ROOT=/home/WRF/ncar
 export WRF_EM_CORE=1
 export WRF_NMM_CORE=0
 export WRF_DA_CORE=0
-export OMP_NUM_THREADS=4
 export MP_STACK_SIZE=64000000
+export THREAD_NUM=`/bin/cat /proc/cpuinfo | /bin/grep processor | /usr/bin/wc -l`
+export OMP_NUM_THREADS=`expr 2 \* ${THREAD_NUM}`
 
 ulimit -s unlimited

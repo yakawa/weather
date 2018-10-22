@@ -311,13 +311,13 @@ class WRF(WRFBase):
 
     def run_wrf(self):
         cwd = os.getcwd()
-        os.chdir(self.WRF_dir)
-        os.environ['OMP_NUM_THREADS'] = str(multiprocessing.cpu_count())
+        os.chdir(str(self.WRF_dir))
+        os.environ['OMP_NUM_THREADS'] = str(multiprocessing.cpu_count() * 2)
         os.environ['WRF_EM_CORE'] = '1'
         os.environ['WRF_NMM_CORE'] = '0'
         os.environ['WRF_DA_CORE'] = '0'
         os.environ['MP_STACK_SIZE'] = '64000000'
 
-        subprocess.run([self.MPIRUN, str(self.WRF_dir / 'wrf.exe'),], check=True)
+        subprocess.run([self.MPIRUN, '-np', '1', str(self.WRF_dir / 'wrf.exe'),], check=True)
 
         os.chdir(cwd)
