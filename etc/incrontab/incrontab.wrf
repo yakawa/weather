@@ -1,1 +1,1 @@
-/home/DATA/incoming/wrf IN_MOVED_TO,IN_NO_LOOP /usr/local/bin/digdag start WRF wrf --session now
+/home/DATA/incoming/wrf IN_MOVED_TO /usr/bin/env python3 /home/weather/tools/processor/process_WRF.py $@$#
