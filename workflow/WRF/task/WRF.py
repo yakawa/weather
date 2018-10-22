@@ -219,7 +219,7 @@ class WRF(WRFBase):
         sst_tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S').strftime('%Y-%m-%d_%H')
         start_tm = digdag.env.params['gfs_tm']
         tm = datetime.datetime.strptime(start_tm, '%Y-%m-%d_%H:%M:%S')
-        hostname = WRFTools.gethostname()
+        hostname = digdag.env.params['hostname']
         if hostname == 'wrf002':
             end_tm = (tm + datetime.timedelta(hours=16*24)).strftime('%Y-%m-%d_%H:%M:%S')
             interval = 12 * 3600
@@ -242,7 +242,7 @@ class WRF(WRFBase):
         ny = digdag.env.params['WRF']['ny']
         tm = digdag.env.params['gfs_tm']
         start_tm = datetime.datetime.strptime(tm, '%Y-%m-%d_%H:%M:%S')
-        hostname = WRFTools.gethostname()
+        hostname = digdag.env.params['hostname']
         step = 90
         if hostname == 'wrf002':
             end_tm = (start_tm + datetime.timedelta(hours=16*24))
@@ -271,7 +271,7 @@ class WRF(WRFBase):
 
     def preprocess_sst(self):
         cwd = os.getcwd()
-        os.chdir(self.WPS_dir)
+        os.chdir(str(self.WPS_dir))
         tm = datetime.datetime.strptime(digdag.env.params['sst_tm'], '%Y-%m-%d_%H:%M:%S')
         subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_sst_dir / tm.strftime('sst.%Y%m%d'))], check=True)
         if self.VTABLE.exists() is True:
@@ -282,7 +282,7 @@ class WRF(WRFBase):
 
     def preprocess_gfs(self):
         cwd = os.getcwd()
-        os.chdir(self.WPS_dir)
+        os.chdir(str(self.WPS_dir))
         tm = datetime.datetime.strptime(digdag.env.params['gfs_tm'], '%Y-%m-%d_%H:%M:%S')
         subprocess.run([self.CSH, str(self.WPS_dir / 'link_grib.csh'), str(self.DATA_gfs_dir / tm.strftime('gfs.%Y%m%d_%H'))], check=True)
         if self.VTABLE.exists() is True:
@@ -293,7 +293,7 @@ class WRF(WRFBase):
 
     def preprocess_wrf(self):
         cwd = os.getcwd()
-        os.chdir(self.WPS_dir)
+        os.chdir(str(self.WPS_dir))
         subprocess.run([str(self.WPS_dir / 'metgrid.exe'),], check=True)
 
         for fn in self.WPS_dir.iterdir():
@@ -302,7 +302,7 @@ class WRF(WRFBase):
                     (self.WRF_dir / fn.name).unlink()
                 (self.WRF_dir / fn.name).symlink_to(fn)
 
-        os.chdir(self.WRF_dir)
+        os.chdir(str(self.WRF_dir))
 
         subprocess.run([self.MPIRUN, '-np', '1', str(self.WRF_dir / 'real.exe'),], check=True)
 
@@ -311,13 +311,13 @@ class WRF(WRFBase):
 
     def run_wrf(self):
         cwd = os.getcwd()
-        os.chdir(self.WRF_dir)
-        os.environ['OMP_NUM_THREADS'] = str(multiprocessing.cpu_count())
+        os.chdir(str(self.WRF_dir))
+        os.environ['OMP_NUM_THREADS'] = str(multiprocessing.cpu_count() * 2)
         os.environ['WRF_EM_CORE'] = '1'
         os.environ['WRF_NMM_CORE'] = '0'
         os.environ['WRF_DA_CORE'] = '0'
         os.environ['MP_STACK_SIZE'] = '64000000'
 
-        subprocess.run([self.MPIRUN, str(self.WRF_dir / 'wrf.exe'),], check=True)
+        subprocess.run([self.MPIRUN, '-np', '1', str(self.WRF_dir / 'wrf.exe'),], check=True)
 
         os.chdir(cwd)
