@@ -8,7 +8,8 @@ import shutil
 
 __DESC__ = 'process GFS'
 
-DST = pathlib.Path('/home/DATA/outgoing/wrf/')
+DST_short = pathlib.Path('/home/DATA/outgoing/wrf_short/')
+DST_week = pathlib.Path('/home/DATA/outgoing/wrf_week/')
 
 FILE_BASE = 'gfs.{yr:04d}{mo:02d}{dy:02d}_{hr:02d}_{ft:03d}'
 
@@ -28,13 +29,16 @@ def get_init():
     return target
 
 
-def make_fp_que(init):
+def make_fp_que_short(init):
     ret = []
-    if init.hour == 12:
+    for ft in range(0, 123, 3):
+        ret.append(FILE_BASE.format(yr=init.year, mo=init.month, dy=init.day, hr=init.hour, ft=ft))
+    return ret
+
+def make_fp_que_week(init):
+    ret = []
+    if init.hour == 12 or init.hour == 0:
         for ft in range(0, 396, 12):
-            ret.append(FILE_BASE.format(yr=init.year, mo=init.month, dy=init.day, hr=init.hour, ft=ft))
-    else:
-        for ft in range(0, 123, 3):
             ret.append(FILE_BASE.format(yr=init.year, mo=init.month, dy=init.day, hr=init.hour, ft=ft))
     return ret
 
@@ -46,16 +50,25 @@ def main(args):
     else:
         init = datetime.datetime.strptime(args.init, '%Y%m%d%H')
 
-    fq = make_fp_que(init)
+    fq_short = make_fp_que_short(init)
+    fq_week = make_fp_que_week(init)
 
-    if DST.exists() is False:
-        DST.mkdir(parent=True)
+    if DST_short.exists() is False:
+        DST_short.mkdir(parent=True)
 
-    if fp.name in fq:
-        shutil.copy(str(fp), str(DST / fp.name))
+    if DST_week.exists() is False:
+        DST_week.mkdir(parent=True)
 
-    with (DST / (fp.name + '.done')).open('w') as f:
-        f.write("")
+
+    if fp.name in fq_short:
+        shutil.copy(str(fp), str(DST_short / fp.name))
+        with (DST_short / (fp.name + '.done')).open('w') as f:
+            f.write("")
+
+    if fp.name in fq_week:
+        shutil.copy(str(fp), str(DST_week / fp.name))
+        with (DST_week / (fp.name + '.done')).open('w') as f:
+            f.write("")
 
 
 if __name__ == '__main__':
