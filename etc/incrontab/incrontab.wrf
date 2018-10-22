@@ -1,1 +1,1 @@
-/home/DATA/incoming/wrf IN_MOVED_TO /usr/bin/env python3 /home/weather/tools/processor/process_WRF.py $@$#
+/home/DATA/incoming/wrf/ IN_MOVED_TO /usr/bin/env python3 /home/weather/tools/processor/process_WRF.py $@$#
