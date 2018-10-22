@@ -17,12 +17,13 @@ _export:
 +get_runtime:
   py>: task.WRF.WRFTools.set_run_time
 
-+check_files:
-  py>: task.WRF.WRFPreProcess.check_files
-
-+sync_files:
++sync:
   _parallel: true
+
   +wrf001:
+    +check_files:
+      py>: task.WRF.WRFPreProcess.check_files_short
+
     +sync:
       sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf_short/ weather@wrf001.hiyorimi.jp:/home/DATA/incoming/wrf
 
@@ -36,6 +37,9 @@ _export:
   +wrf002:
     if>: ${run.hour} == 12 || ${run.hour} == 0
     _do:
+      +check_files:
+        py>: task.WRF.WRFPreProcess.check_files_short
+
       +sync:
         sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf_week/ weather@wrf002.hiyorimi.jp:/home/DATA/incoming/wrf
 
