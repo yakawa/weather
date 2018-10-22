@@ -35,10 +35,10 @@ _export:
 
 
   +wrf002:
-    if>: ${run.hour} == 12 || ${run.hour} == 0
+    if>: ${run.hour == 12 || run.hour == 0}
     _do:
       +check_files:
-        py>: task.WRF.WRFPreProcess.check_files_short
+        py>: task.WRF.WRFPreProcess.check_files_week
 
       +sync:
         sh>: /usr/bin/rsync -azcv --delete /home/DATA/outgoing/wrf_week/ weather@wrf002.hiyorimi.jp:/home/DATA/incoming/wrf

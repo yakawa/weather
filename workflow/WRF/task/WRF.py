@@ -48,12 +48,13 @@ class WRFTools:
     @classmethod
     def set_run_time(cls):
         tm = datetime.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S+00:00')
+        init = WRFTools.get_init_time(tm.strftime('%Y%m%d%H%M'))
         digdag.env.store({
             'run': {
-                'year': tm.year,
-                'month': tm.month,
-                'day': tm.day,
-                'hour': tm.hour,
+                'year': init.year,
+                'month': init.month,
+                'day': init.day,
+                'hour': init.hour,
                 }
             })
 
@@ -83,7 +84,7 @@ class WRFPreProcess(WRFBase):
                 q.append('gfs.{}_{:03d}.done'.format(init.strftime('%Y%m%d_%H'), ft))
         return q
 
-    def check_files_short(self, term):
+    def check_files_short(self):
         tm = datetime.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S+00:00')
         init = WRFTools.get_init_time(tm.strftime('%Y%m%d%H%M'))
         digdag.env.store({'init': init.strftime('gfs.%Y%m%d_%H_'),})
@@ -99,12 +100,10 @@ class WRFPreProcess(WRFBase):
 
         prefix = init.strftime('gfs.%Y%m%d_%H_')
         for fn in self.DATA_short_dir.iterdir():
-            if (not fn.name.startswith(prefix)) and fn.name.startswith('gfs'):
-                fn.unlink()
-            if fn.name.endswith('.done'):
+            if ((not fn.name.startswith(prefix)) and fn.name.startswith('gfs')) or fn.name.endswith('.done'):
                 fn.unlink()
 
-    def check_files_week(self, term):
+    def check_files_week(self):
         tm = datetime.datetime.strptime(digdag.env.params['session_time'], '%Y-%m-%dT%H:%M:%S+00:00')
         init = WRFTools.get_init_time(tm.strftime('%Y%m%d%H%M'))
         digdag.env.store({'init': init.strftime('gfs.%Y%m%d_%H_'),})
@@ -120,11 +119,8 @@ class WRFPreProcess(WRFBase):
 
         prefix = init.strftime('gfs.%Y%m%d_%H_')
         for fn in self.DATA_week_dir.iterdir():
-            if (not fn.name.startswith(prefix)) and fn.name.startswith('gfs'):
+            if ((not fn.name.startswith(prefix)) and fn.name.startswith('gfs')) or fn.name.endswith('.done'):
                 fn.unlink()
-            if fn.name.endswith('.done'):
-                fn.unlink()
-
 
     def remove_gfs_short(self):
         prefix = digdag.env.params['init']
