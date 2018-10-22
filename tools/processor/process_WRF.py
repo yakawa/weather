@@ -10,7 +10,7 @@ import subprocess
 def main(args):
     fp = pathlib.Path(args.FILE)
     if fp.name == 'done':
-        subprocess.run(['/usr/local/bin/digdag', 'start', 'WRF', 'wrf', '--session', 'now'], check=False, stdin=subprocess.DEVNULL, stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+        r = subprocess.run(['/bin/sh', '-c', '/usr/local/bin/digdag start WRF wrf --session now'], check=True, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__DESC__)
