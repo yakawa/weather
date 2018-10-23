@@ -57,7 +57,7 @@ _export:
       +move_result:
         sh>: /bin/mv /home/WRF/WRF/run/wrfout_* /home/DATA/outgoing/wrf/
 
-      +sync_result:
+      +sync_result_short:
         if>: ${hostname == "wrf001"}
         _do:
           +sync:
@@ -65,6 +65,7 @@ _export:
           +notice:
             sh>: ssh weather@weather-process.hiyorimi.jp "touch /home/DATA/incoming/wrf/short/.done; mv /home/DATA/incoming/wrf/short/.done /home/DATA/incoming/wrf/short/done"
 
+      +sync_result_week:
         if>: ${hostname == "wrf002"}
         _do:
           +sync:
