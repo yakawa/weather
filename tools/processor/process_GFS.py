@@ -77,12 +77,12 @@ def main(args):
     if _m is not None:
         d = _m.group('date')
         h = _m.group('hour')
-        f = _m.geoup('ft')
+        f = _m.group('ft')
 
         dr = DST_store / d / h
 
         if not dr.exists():
-            dr.makedir(parents=True)
+            dr.mkdir(parents=True)
         shutil.copy(str(fp), str(dr / fp.name))
 
 if __name__ == '__main__':
