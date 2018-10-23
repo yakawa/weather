@@ -9,6 +9,7 @@ import shutil
 __DESC__ = 'process SST'
 
 DST = pathlib.Path('/home/DATA/outgoing/sst')
+DST_store = pathlib.Path('/home/DATA/store/sst')
 
 def get_latest_sst():
     dt = None
@@ -27,6 +28,10 @@ def main(args):
         (DST / cur.strftime('sst.%Y%m%d')).unlink()
     shutil.copy(str(fp), str(DST / fp.name))
 
+    d = DST_store / init.strftime('%Y%m%d')
+    if not d.exists():
+        d.mkdir(parents=True)
+    shutil.copy(str(fp), str(d / fp.name))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__DESC__)
