@@ -5,14 +5,17 @@ import argparse
 import pathlib
 import datetime
 import shutil
+import re
 
 __DESC__ = 'process GFS'
 
 DST_short = pathlib.Path('/home/DATA/outgoing/wrf_short/')
 DST_week = pathlib.Path('/home/DATA/outgoing/wrf_week/')
+DST_store = pathlib.Path('/home/DATA/store/gfs/')
 
 FILE_BASE = 'gfs.{yr:04d}{mo:02d}{dy:02d}_{hr:02d}_{ft:03d}'
 
+_re_fn = re.compile('gfs.(?P<date>[\d]{8})_(?P<hour>[\d]{2})_(?P<ft>[\d]{3})')
 
 def get_init():
     now = datetime.datetime.utcnow()
@@ -70,6 +73,17 @@ def main(args):
         with (DST_week / (fp.name + '.done')).open('w') as f:
             f.write("")
 
+    _m = _re_fn.search(fp.name)
+    if _m is not None:
+        d = _m.group('date')
+        h = _m.group('hour')
+        f = _m.geoup('ft')
+
+        dr = DST_store / d / h
+
+        if not dr.exists():
+            dr.makedir(parents=True)
+        shutil.copy(str(fp), str(dr / fp.name))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__DESC__)
