@@ -58,10 +58,19 @@ _export:
         sh>: /bin/mv /home/WRF/WRF/run/wrfout_* /home/DATA/outgoing/wrf/
 
       +sync_result:
-        sh>: /usr/bin/rsync -avzr /home/DATA/outgoing/wrf/ weather@weather-process.hiyorimi.jp:/home/DATA/incoming/wrf/
+        if>: ${hostname == "wrf001"}
+        _do:
+          +sync:
+            sh>: /usr/bin/rsync -avzr /home/DATA/outgoing/wrf/ weather@weather-process.hiyorimi.jp:/home/DATA/incoming/wrf/short/
+          +notice:
+            sh>: ssh weather@weather-process.hiyorimi.jp "touch /home/DATA/incoming/wrf/short/.done; mv /home/DATA/incoming/wrf/short/.done /home/DATA/incoming/wrf/short/done"
+
+        if>: ${hostname == "wrf002"}
+        _do:
+          +sync:
+            sh>: /usr/bin/rsync -avzr /home/DATA/outgoing/wrf/ weather@weather-process.hiyorimi.jp:/home/DATA/incoming/wrf/week/
+          +notice:
+            sh>: ssh weather@weather-process.hiyorimi.jp "touch /home/DATA/incoming/wrf/week/.done; mv /home/DATA/incoming/wrf/week/.done /home/DATA/incoming/wrf/week/done"
 
       +cleanup:
         sh>: /bin/rm -rf /home/DATA/outgoing/wrf/wrfout_*
-
-      +notify_to_processor:
-        sh>: ssh weather@weather-process.hiyorimi.jp "touch /home/DATA/incoming/wrf/.done"

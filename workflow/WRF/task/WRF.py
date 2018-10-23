@@ -247,11 +247,11 @@ class WRF(WRFBase):
         if hostname == 'wrf002':
             end_tm = (start_tm + datetime.timedelta(hours=16*24))
             interval = 12 * 3600
-            run_hour = 16 * 24
+            run_hour = 10 * 24
         else:
             end_tm = (start_tm + datetime.timedelta(hours=5*24))
             interval = 3 * 3600
-            run_hour = 5 * 24
+            run_hour = 4 * 24
         tm_s_year = start_tm.year
         tm_s_month = start_tm.month
         tm_s_day = start_tm.day
