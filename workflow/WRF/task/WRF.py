@@ -127,9 +127,6 @@ class WRFPreProcess(WRFBase):
         for fn in self.DATA_short_dir.iterdir():
             if fn.name.startswith(prefix):
                 fn.unlink()
-        for fn in self.DATA_week_dir.iterdir():
-            if fn.name.startswith(prefix):
-                fn.unlink()
 
     def remove_gfs_week(self):
         prefix = digdag.env.params['init']
