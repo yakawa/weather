@@ -1,0 +1,9 @@
+_export:
+  python: /usr/bin/python3
+  CACHE_dir: "/home/DATA/incoming/wrf/short/"
+  STORE_dir: "/home/DATA/store/wrf/short/"
+  TMP_dir: "/home/weather/tmp/short/"
+  run_days: 4
+
+
+!include : "postprocess.dig"

@@ -11,6 +11,7 @@ import time
 import logging
 import socket
 import multiprocessing
+import shutil
 
 import jinja2
 
@@ -62,6 +63,8 @@ class WRFBase():
     def __init__(self):
         self.WRF_dir = pathlib.Path('/home/WRF/WRF/run')
         self.WPS_dir = pathlib.Path('/home/WRF/WPS')
+        self.ARWpost_dir = pathlib.Path('/home/WRF/ARWpost')
+        self.TEMPLATE_dir = pathlib.Path('/home/weather/etc/WRF/template')
 
 
 class WRFPreProcess(WRFBase):
@@ -140,7 +143,6 @@ class WRF(WRFBase):
         self.DATA_gfs_dir = pathlib.Path('/home/DATA/incoming/wrf')
         self.DATA_sst_dir = pathlib.Path('/home/DATA/incoming/sst')
 
-        self.TEMPLATE_dir = pathlib.Path('/home/weather/etc/WRF/template')
         self.VTABLE = self.WPS_dir / 'Vtable'
 
         self.CSH = '/bin/csh'
@@ -318,3 +320,67 @@ class WRF(WRFBase):
         subprocess.run([self.MPIRUN, str(self.WRF_dir / 'wrf.exe'),], check=True)
 
         os.chdir(cwd)
+
+class WRFPostProcess(WRFBase):
+    def __init__(self):
+        super().__init__()
+
+    def get_init(self, dr):
+        d = pathlib.Path(dr)
+        tm = []
+        for f in d.iterdir():
+            if f.name.startswith('wrfout_d01_'):
+                tm.append(datetime.datetime.strptime(f.name, 'wrfout_d01_%Y-%m-%d_%H:%M:%S'))
+        init = sorted(tm)[-1]
+        digdag.env.store({
+            'run': {
+                'year': init.year,
+                'month': init.month,
+                'day': init.day,
+                'hour': init.hour,
+                }
+            })
+
+    def fillin(self, cache, tmp, days):
+        cache_dir = pathlib.Path(cache)
+        tmp_dir = pathlib.Path(tmp)
+
+        env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(self.TEMPLATE_dir), encoding='utf8'))
+        tmpl = env.get_template('namelist.ARWpost')
+
+        year = digdag.env.params['run']['year']
+        month = digdag.env.params['run']['month']
+        day = digdag.env.params['run']['day']
+        hour = digdag.env.params['run']['hour']
+
+        tm = datetime.datetime(year=year, month=month, day=day, hour=hour)
+        st = tm.strftime('%Y-%m-%d_%H:%M:%S')
+        et = (tm + datetime.timedelta(days=int(days))).strftime('%Y-%m-%d_%H:%M:%S')
+
+        src = cache_dir / tm.strftime('wrfout_d01_%Y-%m-%d_%H:%M:%S')
+        dst = tmp_dir / "short_"
+
+        with (self.ARWpost_dir / 'namelist.ARWpost').open('w') as f:
+            f.write(tmpl.render(start_time=st, end_time=et,of_nc=str(src), out=str(dst)))
+
+    def extract(self):
+        cwd = os.getcwd()
+        os.chdir(str(self.ARWpost_dir))
+        subprocess.run([str(self.ARWpost_dir / 'ARWpost.exe'),], check=True)
+        os.chdir(cwd)
+
+    def wrap_up(self, src, dst):
+        src = pathlib.Path(src)
+        dst = pathlib.Path(dst)
+
+        year = digdag.env.params['run']['year']
+        month = digdag.env.params['run']['month']
+        day = digdag.env.params['run']['day']
+        hour = digdag.env.params['run']['hour']
+
+        src = src / "wrfout_d01_{:04d}-{:02d}-{:02d}_{:02d}:00:00".format(year, month, day, hour)
+        dst_d = dst / "{:04d}{:02d}{:02d}".format(year, month, day)
+        if not dst_d.exists():
+            dst.mkdir(parents=True)
+
+        src.rename(dst_d / src.name)

@@ -1,0 +1,33 @@
+timezone: UTC
+
+
++get_hostname:
+  py>: task.WRF.WRFTools.set_hostname
+
++get_runtime:
+  py>: task.WRF.WRFPostProcess.get_init
+  dr: ${CACHE_dir}
+
++PostProcess:
+  +fillin_template:
+    py>: task.WRF.WRFPostProcess.fillin
+    days: ${run_days}
+    cache: ${CACHE_dir}
+    tmp: ${TMP_dir}
+
+  +extract:
+    py>: task.WRF.WRFPostProcess.extract
+
+  +pickup:
+    echo>: pick up
+
++Guidance:
+  echo>: Guidance
+
++Charts:
+  echo>: chart
+
++wrapup:
+  py>: task.WRF.WRFPostProcess.wrap_up
+  src: ${CACHE_dir}
+  dst: ${STORE_dir}
