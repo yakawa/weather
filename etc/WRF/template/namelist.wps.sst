@@ -34,5 +34,9 @@
 &metgrid
   fg_name = 'FILE'
   io_form_metgrid = 2,
-  constants_name = '/home/WRF/WPS/SST:{{ tm }}'
+ constants_name = '/home/WRF/WPS/SST:{{ tm }}'
 /
+
+
+
+__EOF__
