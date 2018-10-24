@@ -1,0 +1,24 @@
+&datetime
+  start_date = '{{ start_time  }}',
+  end_date   = '{{ end_time }}',
+  interval_seconds = 3600,
+  tacc = 0,
+  debug_level = 0,
+/
+
+&io
+  input_root_name = '{{ of_nc }}'
+  output_root_name = '{{ out }}'
+  plot = 'list'
+  fields = 'geopt,tc,td,T2,td2,rh,rh2,theta,umet,vmet,u10m,v10m,slp,cape,mcape,mcin,lcl,lfc,max_dbz,clfr,ept,RAINRNC,RAINRC,RAINC,RAINNC,SWDOWN,W,QVAPOR,QCLOUD,QRAIN,tpw,W'
+  mercator_defs = .true.
+/
+
+&interp
+  interp_method = 1,
+  interp_levels = 1000.,925.,900.,850.,800.,700.,600.,500.,400.,300.,200.,100.,
+  extrapolate = .true.
+/
+
+
+_END_
