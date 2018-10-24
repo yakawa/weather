@@ -133,7 +133,7 @@ export CPPFLAGS=-I$WRF_LIB_DIR/grib2/include
 
 export JASPERLIB=$WRF_LIB_DIR/grib2/lib
 export JASPERINC=$WRF_LIB_DIR/grib2/include
-export NCARG_ROOT=/home/WRF/ncar
+export NCARG_ROOT=/usr/share/ncarg/
 
 export WRF_EM_CORE=1
 export WRF_NMM_CORE=0
