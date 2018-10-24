@@ -21,6 +21,7 @@
  io_form_restart                     = 2
  io_form_input                       = 2
  io_form_boundary                    = 2
+ output_diagnostics                  = 1 
  /
 
 &domains
