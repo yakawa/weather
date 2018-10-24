@@ -4,6 +4,7 @@
   interval_seconds = 3600,
   tacc = 0,
   debug_level = 0,
+
 /
 
 &io
@@ -12,6 +13,7 @@
   plot = 'list'
   fields = 'geopt,tc,td,T2,td2,rh,rh2,theta,umet,vmet,u10m,v10m,slp,cape,mcape,mcin,lcl,lfc,max_dbz,clfr,ept,RAINRNC,RAINRC,RAINC,RAINNC,SWDOWN,W,QVAPOR,QCLOUD,QRAIN,tpw,W'
   mercator_defs = .true.
+  split_output = .true.
 /
 
 &interp

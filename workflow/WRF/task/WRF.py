@@ -358,7 +358,7 @@ class WRFPostProcess(WRFBase):
         et = (tm + datetime.timedelta(days=int(days))).strftime('%Y-%m-%d_%H:%M:%S')
 
         src = cache_dir / tm.strftime('wrfout_d01_%Y-%m-%d_%H:%M:%S')
-        dst = tmp_dir / "short_"
+        dst = tmp_dir / "short"
 
         with (self.ARWpost_dir / 'namelist.ARWpost').open('w') as f:
             f.write(tmpl.render(start_time=st, end_time=et,of_nc=str(src), out=str(dst)))
@@ -369,9 +369,10 @@ class WRFPostProcess(WRFBase):
         subprocess.run([str(self.ARWpost_dir / 'ARWpost.exe'),], check=True)
         os.chdir(cwd)
 
-    def wrap_up(self, src, dst):
+    def wrap_up(self, src, dst, tmp):
         src = pathlib.Path(src)
         dst = pathlib.Path(dst)
+        tmp = pathlib.Path(tmp)
 
         year = digdag.env.params['run']['year']
         month = digdag.env.params['run']['month']
@@ -381,6 +382,9 @@ class WRFPostProcess(WRFBase):
         src = src / "wrfout_d01_{:04d}-{:02d}-{:02d}_{:02d}:00:00".format(year, month, day, hour)
         dst_d = dst / "{:04d}{:02d}{:02d}".format(year, month, day)
         if not dst_d.exists():
-            dst.mkdir(parents=True)
+            dst_d.mkdir(parents=True)
 
         src.rename(dst_d / src.name)
+
+        for f in tmp.iterdir():
+            f.unlink()
