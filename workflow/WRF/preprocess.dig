@@ -4,7 +4,7 @@ schedule:
     cron>: 5 4,10,16,22 * * *
 
 sla:
-  duration: 1:00
+  duration: 1:30
   +notice:
     +notice_to:
       echo>: TimedOut!
