@@ -31,3 +31,4 @@ timezone: UTC
   py>: task.WRF.WRFPostProcess.wrap_up
   src: ${CACHE_dir}
   dst: ${STORE_dir}
+  tmp: ${TMP_dir}
