@@ -19,7 +19,7 @@ timezone: UTC
     py>: task.WRF.WRFPostProcess.extract
 
   +pickup:
-    echo>: pick up
+    sh>: /home/weather/tools/WRF/pickup ${StationList} ${TMP_dir} ${RESULT_dir} ${term}
 
 +Guidance:
   echo>: Guidance

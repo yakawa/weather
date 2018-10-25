@@ -1,8 +1,11 @@
 _export:
   python: /usr/bin/python3
+  StationList: /home/weather/etc/station.txt
   CACHE_dir: "/home/DATA/incoming/wrf/short/"
   STORE_dir: "/home/DATA/store/wrf/short/"
   TMP_dir: "/home/weather/tmp/short/"
+  RESULT_dir: "/home/DATA/store/wrf_result/short/"
+  term: short
   run_days: 4
 
 
