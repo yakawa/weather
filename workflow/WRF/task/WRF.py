@@ -341,7 +341,7 @@ class WRFPostProcess(WRFBase):
                 }
             })
 
-    def fillin(self, cache, tmp, days):
+    def fillin(self, cache, tmp, days, term):
         cache_dir = pathlib.Path(cache)
         tmp_dir = pathlib.Path(tmp)
 
@@ -358,7 +358,7 @@ class WRFPostProcess(WRFBase):
         et = (tm + datetime.timedelta(days=int(days))).strftime('%Y-%m-%d_%H:%M:%S')
 
         src = cache_dir / tm.strftime('wrfout_d01_%Y-%m-%d_%H:%M:%S')
-        dst = tmp_dir / "short"
+        dst = tmp_dir / term
 
         with (self.ARWpost_dir / 'namelist.ARWpost').open('w') as f:
             f.write(tmpl.render(start_time=st, end_time=et,of_nc=str(src), out=str(dst)))
