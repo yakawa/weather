@@ -379,6 +379,8 @@ class WRFPostProcess(WRFBase):
         day = digdag.env.params['run']['day']
         hour = digdag.env.params['run']['hour']
 
+        (src / "done").unlink()
+
         src = src / "wrfout_d01_{:04d}-{:02d}-{:02d}_{:02d}:00:00".format(year, month, day, hour)
         dst_d = dst / "{:04d}{:02d}{:02d}".format(year, month, day)
         if not dst_d.exists():
