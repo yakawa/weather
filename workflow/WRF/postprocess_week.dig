@@ -1,0 +1,12 @@
+_export:
+  python: /usr/bin/python3
+  StationList: /home/weather/etc/station.txt
+  CACHE_dir: "/home/DATA/incoming/wrf/week/"
+  STORE_dir: "/home/DATA/store/wrf/week/"
+  TMP_dir: "/home/weather/tmp/week/"
+  RESULT_dir: "/home/DATA/store/wrf_result/week/"
+  term: week
+  run_days: 10
+
+
+!include : "postprocess.dig"
