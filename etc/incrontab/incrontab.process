@@ -1,2 +1,4 @@
 /home/weather/cache/GFS/ IN_CLOSE_WRITE /usr/bin/env python3 /home/weather/tools/processor/process_GFS.py $@$#
 /home/weather/cache/SST/ IN_CLOSE_WRITE /usr/bin/env python3 /home/weather/tools/processor/process_SST.py $@$#
+/home/DATA/incoming/wrf/short/ IN_MOVED_TO /usr/bin/env python3 /home/weather/tools/processor/process_PostWRF.py $@$# short
+/home/DATA/incoming/wrf/week/ IN_MOVED_TO /usr/bin/env python3 /home/weather/tools/processor/process_PostWRF.py $@$# week
