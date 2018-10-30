@@ -318,6 +318,10 @@ func calc_and_write_SSI(fn string, nx, ny int, n500, n700, n850, n925 int, tC, t
 
 }
 
+func init() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
+
 func main() {
 	kingpin.Parse()
 
