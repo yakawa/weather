@@ -1,6 +1,7 @@
 _export:
   python: /usr/bin/python3
   StationList: /home/weather/etc/station.txt
+  ControlFile: /home/weather/tmp/week/week.ctl
   CACHE_dir: "/home/DATA/incoming/wrf/week/"
   STORE_dir: "/home/DATA/store/wrf/week/"
   TMP_dir: "/home/weather/tmp/week/"

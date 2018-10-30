@@ -19,6 +19,9 @@ timezone: UTC
   +extract:
     py>: task.WRF.WRFPostProcess.extract
 
+  +addDiagnosis:
+    sh>: /home/weather/tools/WRF/addDiagnosis ${ControlFile} ${TMP_dir}
+
   +pickup:
     sh>: /home/weather/tools/WRF/pickup ${StationList} ${TMP_dir} ${RESULT_dir} ${term}
 
