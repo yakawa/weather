@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"gopkg.in/alecthomas/kingpin.v2"
 )
@@ -219,14 +220,13 @@ func calc_ssi(lowT, lowTd, upT []float32, lowP, upP float32, nx, ny int) []float
 	return ssi
 }
 
-func calc_and_write_SSI(fn string, nx, ny int, n500, n700, n850, n925 int, tC, tdC int) {
-	file, err := os.OpenFile(fn, os.O_RDWR|os.O_APPEND, 0666)
+func calc_and_write_SSI(fn string, nx, ny int, n500, n700, n850, n925 int, tC, tdC int, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	file, err := os.OpenFile(fn, os.O_RDONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer func() {
-		_ = file.Close()
-	}()
 
 	buf := make([]byte, nx*ny*4)
 	t500 := make([]float32, nx*ny)
@@ -293,9 +293,16 @@ func calc_and_write_SSI(fn string, nx, ny int, n500, n700, n850, n925 int, tC, t
 		log.Fatal(err)
 	}
 
+	file.Close()
+
 	ssi85 := calc_ssi(t850, td850, t500, 850.0, 500.0, nx, ny)
 	ssi87 := calc_ssi(t850, td850, t700, 850.0, 700.0, nx, ny)
 	ssi98 := calc_ssi(t925, td925, t850, 925.0, 850.0, nx, ny)
+
+	file, err = os.OpenFile(fn, os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if err := binary.Write(bytes.NewBuffer(buf), binary.BigEndian, ssi85); err != nil {
 		log.Fatal(err)
@@ -316,6 +323,7 @@ func calc_and_write_SSI(fn string, nx, ny int, n500, n700, n850, n925 int, tC, t
 		log.Fatal(err)
 	}
 
+	file.Close()
 }
 
 func init() {
@@ -355,10 +363,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	wait := &sync.WaitGroup{}
+
 	for _, file := range files {
 		if strings.HasSuffix(file.Name(), ".dat") {
-			go calc_and_write_SSI(*dataDir+"/"+file.Name(), nx, ny, n500, n700, n850, n925, tC, tdC)
+			wait.Add(1)
+			go calc_and_write_SSI(*dataDir+"/"+file.Name(), nx, ny, n500, n700, n850, n925, tC, tdC, wait)
 		}
 	}
-
+	wait.Wait()
 }
