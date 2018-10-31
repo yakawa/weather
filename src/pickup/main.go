@@ -177,6 +177,7 @@ func pickup(dataDir string, dataFile string, stationList *map[string]*Station, d
 	}
 
 	extractVals := map[string]map[string]map[float32][]float32{}
+	pos := 0
 	for _, variable := range di.Vars {
 		name := variable.Name
 		for i := 0; i < variable.NL; i++ {
@@ -185,6 +186,7 @@ func pickup(dataDir string, dataFile string, stationList *map[string]*Station, d
 			if err != nil {
 				log.Fatal(err)
 			}
+			pos = pos + n
 			if n != di.NX*di.NY*4 {
 				log.Fatal("Less read")
 			}
