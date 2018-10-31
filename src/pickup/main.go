@@ -211,7 +211,7 @@ func pickup(dataDir string, dataFile string, stationList *map[string]*Station, d
 
 func parseXDef(line string, sc *bufio.Scanner) (int, float64, float64) {
 	tmp := strings.TrimPrefix(line, "xdef")
-	tmp = strings.TrimSuffix(tmp, "levels")
+	tmp = strings.TrimSuffix(strings.TrimSpace(tmp), "levels")
 	num, err := strconv.Atoi(strings.TrimSpace(tmp))
 	if err != nil {
 		log.Fatal(err)
@@ -239,7 +239,7 @@ func parseXDef(line string, sc *bufio.Scanner) (int, float64, float64) {
 
 func parseYDef(line string, sc *bufio.Scanner) (int, float64, float64) {
 	tmp := strings.TrimPrefix(line, "ydef")
-	tmp = strings.TrimSuffix(tmp, "levels")
+	tmp = strings.TrimSuffix(strings.TrimSpace(tmp), "levels")
 	num, err := strconv.Atoi(strings.TrimSpace(tmp))
 	if err != nil {
 		log.Fatal(err)
@@ -268,7 +268,7 @@ func parseYDef(line string, sc *bufio.Scanner) (int, float64, float64) {
 func parseZDef(line string, sc *bufio.Scanner) (int, []float64) {
 	var lev []float64
 	tmp := strings.TrimPrefix(line, "zdef")
-	tmp = strings.TrimSuffix(tmp, "levels")
+	tmp = strings.TrimSuffix(strings.TrimSpace(tmp), "levels")
 	num, err := strconv.Atoi(strings.TrimSpace(tmp))
 	if err != nil {
 		log.Fatal(err)
