@@ -10,4 +10,5 @@ cleanup /home/weather/cache/GSM/ 7
 cleanup /home/weather/cache/MSM/ 7
 cleanup /home/weather/cache/JMAXML/ 2
 cleanup /home/weather/cache/GFS/ 7
+cleanup /home/weather/cache/GEFS/ 1
 cleanup /home/weather/cache/SST/ 7
