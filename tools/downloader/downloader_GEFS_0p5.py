@@ -28,7 +28,7 @@ NUM_THREAD = 10
 download_que = queue.Queue()
 logger = logging.getLogger(__name__)
 
-kind = ["avg", "c00", "p01", "p02", "p03", "p04", "p05", "p06", "p07", "p08", "P09", "p10", "p11", "p12", "p13", "p14", "p15", "p16", "p17", "p18", "p19", "p20", "spr"]
+kind = ["avg", "c00", "p01", "p02", "p03", "p04", "p05", "p06", "p07", "p08", "p09", "p10", "p11", "p12", "p13", "p14", "p15", "p16", "p17", "p18", "p19", "p20", "spr"]
 
 def setup_logger():
     handler = logging.handlers.RotatingFileHandler(str(LOG), maxBytes=1*1024*1024, backupCount=10)
