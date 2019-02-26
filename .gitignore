@@ -24,6 +24,7 @@ cache/MSM/*
 cache/JMAWIS/*
 cache/JMAXML/*
 cache/GFS/*
+cache/GEFS/*
 cache/SST/*
 
 ## Digdag
