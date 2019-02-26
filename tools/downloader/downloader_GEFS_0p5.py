@@ -55,12 +55,12 @@ def get_init():
 
 
 def make_que():
-    for ft in range(0, 192, 3):
+    for ft in range(0, 193, 3):
         for k in kind:
             download_que.put([ft, k])
-    for ft in range(192, 384, 6):
-        for k in kind:
-            download_que.put([ft, k])
+    #for ft in range(192, 384, 6):
+    #    for k in kind:
+    #        download_que.put([ft, k])
 
 def downloader(init, data_dir):
     while True:
